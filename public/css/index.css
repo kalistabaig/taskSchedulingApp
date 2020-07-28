@@ -85,14 +85,6 @@ ul.weekdays abbr[title] {
   background-color: white;
 }
 
-/* Full-width input fields */
-.task-container input[type=text], .form-container input[type=text] {
-  width: 100%;
-  padding: 15px;
-  margin: 5px 0 22px 0;
-  border: none;
-  background: #f1f1f1;
-}
 /* Set a style for the submit/login button */
 .task-container .submit-btn {
   background-color: #4CAF50;
@@ -160,4 +152,10 @@ ul.weekdays abbr[title] {
 
 .selected-cell {
   background-color: lavender;
+}
+
+.location {
+  width: 100%;
+  padding: 0;
+  margin: 0;
 }

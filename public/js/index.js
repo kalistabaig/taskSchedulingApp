@@ -6,13 +6,27 @@ const prev_week_element = document.getElementById("prevWeek");
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const weekDayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const monthDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-let selectedCell;
 let firstDayOfWeek;
 const numMilliSecondsInDay = 24*60*60*1000;
-const database = [
+const tasks = [
     {   name: "Kali",
         id: 0,
-        tasks: []
+        tasks: [
+            {
+                id: 0,
+                startDateTime: new Date('2020-07-28T03:00:00'),
+                duration: 2,
+                location: 'toronto',
+                type: 'Pickup'
+            },
+            {
+                id: 1,
+                startDateTime: new Date('2020-07-28T15:00:00'),
+                duration: 3,
+                location: 'markham',
+                type: 'Dropoff'
+            }
+        ]
     },
     {
         name: "Karisma",
@@ -47,7 +61,7 @@ function closeDownloadForm(e) {
 
 function openForm(e) {
     document.getElementById("myForm").style.display = "block";
-    selectedCell = e.target;
+    let selectedCell = e.target;
     const startDateTime = new Date(parseInt(selectedCell.dataset.startDateTime))
     document.getElementsByClassName('date-text')[0].innerHTML = startDateTime.toLocaleDateString();
     document.getElementsByClassName('task-time')[0].innerHTML = startDateTime.toLocaleTimeString();
@@ -58,7 +72,7 @@ function openForm(e) {
 }
 
 function closeForm() {
-    selectedCell.style = "background: white";
+    document.getElementsByClassName('selected-cell')[0].classList.remove('selected-cell');
     document.getElementById("myForm").style.display = "none";
 }
 
