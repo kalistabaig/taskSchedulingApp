@@ -1,11 +1,13 @@
 const gridElement = document.getElementsByClassName('day-grid')[0];
 const month_element = document.getElementsByClassName("month")[0];
-const next_month_element = document.getElementById("nextMonth");
-const prev_month_element = document.getElementById("prevMonth");
+const todayButton = document.getElementsByClassName('todayBtn')[0];
+const next_week_element = document.getElementById("nextWeek");
+const prev_week_element = document.getElementById("prevWeek");
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const weekDayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const monthDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 let selectedCell;
+let firstDayOfWeek;
 const numMilliSecondsInDay = 24*60*60*1000;
 const database = [
     {   name: "Kali",
@@ -25,32 +27,15 @@ const database = [
      
 ];
 
-
-//Get the current Days date
-let currentDate = new Date();
-let currentDay = currentDate.getDate();
-let currentMonth = currentDate.getMonth();
-let currentYear = currentDate.getFullYear();
-const firstDayOfWeek = new Date(currentDate.valueOf() - (currentDate.getDay()*numMilliSecondsInDay)); 
-
-//display the current month and year
-month_element.innerHTML = months[currentMonth] + ' ' + currentYear + currentDay;
-
-//When the page loads the selected date witll alwasy start as being the current days date
-let selectedDate =  currentDate;
-let selectedDay = currentDay;
-let selectedMonth = currentMonth;
-let selectedYear = currentYear;
-
 // add event listener to arrows so when they are clicked it changes the dates 
-next_month_element.addEventListener('click', changeMonth);
-prev_month_element.addEventListener('click', changeMonth);
+next_week_element.addEventListener('click', changeWeek);
+prev_week_element.addEventListener('click', changeWeek);
+todayButton.addEventListener('click', toCurrentDate);
 
 
-populateGrid();
+toCurrentDate();
 
 //Functions
-
 
 function openDownloadForm(e) {
     document.getElementById("download-form").style.display = "block";
@@ -66,8 +51,10 @@ function openForm(e) {
     const startDateTime = new Date(parseInt(selectedCell.dataset.startDateTime))
     document.getElementsByClassName('date-text')[0].innerHTML = startDateTime.toLocaleDateString();
     document.getElementsByClassName('task-time')[0].innerHTML = startDateTime.toLocaleTimeString();
-    selectedCell.style = "background: lavender";
-
+    if (document.getElementsByClassName('selected-cell').length > 0) {
+        document.getElementsByClassName('selected-cell')[0].classList.remove('selected-cell');
+    }
+    selectedCell.classList.add('selected-cell');
 }
 
 function closeForm() {
@@ -75,30 +62,19 @@ function closeForm() {
     document.getElementById("myForm").style.display = "none";
 }
 
-function changeMonth(e) {
+function changeWeek(e) {
     let arrowClass = (e.target.className).split(" ")[1];
    
-    if (arrowClass == 'next-month') {
-        currentMonth++;
-        if (currentMonth == 12) {
-            currentMonth = 0;
-            currentYear++;
-        }
-        month_element.innerHTML = months[currentMonth] + ' ' + currentYear;
-
-
-        console.log("next month arrow clicked");
-    } else if (arrowClass == "prev-month") {
-        currentMonth--;
-        if (currentMonth == -1) {
-            currentMonth = 11;
-            currentYear--;
-        }
-        month_element.innerHTML = months[currentMonth] + ' ' + currentYear;
-        console.log("previous month arrow clicked");
+    if (arrowClass == 'next-week') {
+        firstDayOfWeek = addDays(firstDayOfWeek, 7);
+    } else if (arrowClass == "prev-week") {
+        firstDayOfWeek = addDays(firstDayOfWeek, -7);
     }else {
         return -1;
     }
+
+
+    updatePage();
 }
 
 function addDays(date, days) {
@@ -108,6 +84,10 @@ function addDays(date, days) {
 }
 
 function populateGrid() {
+
+    while (gridElement.hasChildNodes()) {   
+        gridElement.removeChild(gridElement.firstChild);
+      }
 
     const timeDiv = document.createElement('div');
     timeDiv.innerHTML = "Time"
@@ -138,20 +118,42 @@ function populateGrid() {
     }
 }
 
-// function addTask(date, time, timeInterval, location, type) {
-//     const newTask = 
-//     {
-//         id: getNewId(),
-//         date: date,
-//         time: time;
-//         duration: timeInterval,
-//         location: location,
-//         type: type
-//     }
-//     if (checkTask(newTask)) {
-//     }
+function addTask(date, time, timeInterval, location, type) {
+    const newTask = 
+    {
+        id: getNewId(),
+        date: date,
+        time: time,
+        duration: timeInterval,
+        location: location,
+        type: type
+    }
+    console.log(newTask);
 
-// }
+    return(false);
+
+}
+
+function updateMonthDate() {
+
+    const lastDayOfWeek = addDays(firstDayOfWeek, 6);
+    if (lastDayOfWeek.getMonth() != firstDayOfWeek.getMonth()) {
+        month_element.innerHTML = months[firstDayOfWeek.getMonth()] + ' ' + firstDayOfWeek.getFullYear() + " - " + months[lastDayOfWeek.getMonth()] + ' ' + lastDayOfWeek.getFullYear();
+    }else{
+        month_element.innerHTML = months[firstDayOfWeek.getMonth()] + ' ' + firstDayOfWeek.getFullYear()
+    }
+}
+
+function updatePage() {
+    populateGrid();
+    updateMonthDate();
+}
+
+function toCurrentDate() {
+    let currentDate = new Date();
+    firstDayOfWeek = new Date(currentDate.valueOf() - (currentDate.getDay()*numMilliSecondsInDay)); 
+    updatePage();
+}
 
 // function getNewId() {
 //     let i;

@@ -157,3 +157,7 @@ ul.weekdays abbr[title] {
 .pick-date-range {
   display: flex;
 }
+
+.selected-cell {
+  background-color: lavender;
+}
