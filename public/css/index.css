@@ -1,0 +1,161 @@
+header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2em;
+  min-height: 10vh;
+  text-align: center;
+}
+
+ul {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-gap: 0em;
+  margin: 0 auto;
+  max-width: 64em;
+  padding: 0;
+}
+
+li {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  list-style: none;
+  margin-left: 0;
+  font-size: 20px;
+}
+
+ul.weekdays {
+  margin-bottom: 4em;
+}
+
+ul.weekdays li {
+  height: 4vw;
+}
+
+ul.day-grid li {
+  border: 1px solid ;
+  height: 13vw;
+  max-height: 125px;
+}
+
+ul.weekdays abbr[title] {
+  border: none;
+  font-weight: 800;
+  text-decoration: none;
+}
+  
+
+/* Button used to open the contact form - fixed at the bottom of the page */
+.open-button {
+  background-color: #000;
+  color: white;
+  padding: 16px 20px;
+  border: none;
+  cursor: pointer;
+  opacity: 0.8;
+  position: fixed;
+  bottom: 23px;
+  right: 28px;
+  width: 280px;
+}
+
+/* The popup form - hidden by default */
+.form-popup {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  right: 15px;
+  border: 3px solid #f1f1f1;
+  z-index: 9;
+}
+
+.download-form {
+  background-color: burlywood;
+  display: none;
+  position: fixed;
+  bottom: 0;
+  right: 15px;
+  border: 3px solid #f1f1f1;
+  z-index: 9;
+}
+
+/* Add styles to the form container */
+.task-container {
+  max-width: 300px;
+  padding: 10px;
+  background-color: white;
+}
+
+/* Full-width input fields */
+.task-container input[type=text], .form-container input[type=text] {
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  border: none;
+  background: #f1f1f1;
+}
+/* Set a style for the submit/login button */
+.task-container .submit-btn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 16px 20px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  margin-bottom:10px;
+  opacity: 0.8;
+}
+
+.driver {
+  background-color: lightgray;
+  color: black;
+  padding: 16px 20px;
+  border: none;
+  width: 109px;
+  margin-bottom:10px;
+  opacity: 0.8;
+}
+
+/* Add a red background color to the cancel button */
+.task-container .cancel {
+  background-color: red;
+}
+
+/* Add some hover effects to buttons */
+.task-container {
+  opacity: 1;
+}
+
+.calendar-date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.month-picker {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px;
+}
+
+.arrows {
+  width: 35px;
+  height: 35px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 25px;
+  font-weight: 350;
+  cursor: pointer;
+
+}
+
+.month {
+  font-size: 50px;
+}
+
+.pick-date-range {
+  display: flex;
+}

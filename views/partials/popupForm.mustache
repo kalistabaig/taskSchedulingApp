@@ -1,0 +1,37 @@
+<div class="form-popup" id="myForm">
+    <form action="/addTask" class="task-container" method="POST">
+      <h1>Add Task</h1>
+      <div class="date-display">
+        <label><b>Date</b></label>
+        <p task-date>07/27/2020</p>
+      </div>
+      <div class="time-display">
+        <label><b>Arival Time</b></label>
+        <p class="task-time">12:00</p>
+      </div>
+      <div class="duration-display">
+        <label><b>Duration</b></label>
+        <p class="task-duration">2</p>
+      </div>
+      <div class="task-destination">
+        <label><b>Location</b></label>
+        <p class="task-detination">14 Taplane Dr</p>
+      </div>
+      <div class="task-picker">
+        <p>Task:</p>
+        <input type="radio" id="pickup" name="pickup" value="pickup">
+        <label for="pickup">Pick Up</label><br>
+        <input type="radio" id="dropoff" name="dropoff" value="dropoff">
+        <label for="dropoff">Drop Off</label><br>
+        <input type="radio" id="other" name="other" value="other">
+        <label for="other">Other</label>
+      </div>
+  
+      <label for="driver"><b>Driver</b></label>
+      <p class="driver"> Selected Driver</p>
+      
+  
+      <button type="submit" class="submit-btn">Add Task</button>
+      <button type="button" class="btn cancel" onclick="closeForm()">Cancel</button>
+    </form>
+  </div>

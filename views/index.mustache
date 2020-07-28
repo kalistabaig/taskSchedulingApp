@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Schedueler</title>
+    <link rel="stylesheet" href="/css/index.css">
+</head>
+<body>
+    <div class="calendar">
+            <button class="todayBtn">Today</button>
+            <button onclick="openDownloadForm()"> Download CSV</button>
+
+            <form action="/displayDriverTaskSheet">
+              <label for="drivers">Driver:</label>
+              <select name="drivers" class="drivers">
+                  <option name="radiobtn" value="0">Karisma</option>
+                  <option name="radiobtn" value="1">Kalista</option>
+                  <option name="radiobtn" value="2">Matthew</option>
+              </select>
+            </form>
+
+              
+
+          <header>
+            <div class="month-picker">
+              <div class="arrows prev-month" id="prevMonth">&lt</div>
+              <div class="month" id="month"></div>
+              <div class="arrows next-month" id="nextMonth">&gt</div>
+            </div>
+        </header>
+        {{>layout}}
+        <script src="/js/index.js"></script>
+    </div>
+
+    {{>downloadForm}}
+
+    {{>popupForm}}
+</body>
+</html>
