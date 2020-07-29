@@ -4,10 +4,12 @@ const driverSelect = document.getElementsByClassName('drivers')[0];
 const todayButton = document.getElementsByClassName('todayBtn')[0];
 const next_week_element = document.getElementById("nextWeek");
 const prev_week_element = document.getElementById("prevWeek");
+const taskForm = document.getElementsByClassName('task-container')[0];
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const weekDayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const monthDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 let firstDayOfWeek;
+let selectedTask;
 const numMilliSecondsInDay = 24*60*60*1000;
 const drivers = [
     {   name: "Kali",
@@ -79,7 +81,11 @@ let currentDriver = drivers[0];
 next_week_element.addEventListener('click', changeWeek);
 prev_week_element.addEventListener('click', changeWeek);
 todayButton.addEventListener('click', toCurrentDate);
-driverSelect.addEventListener('change', setDriver)
+driverSelect.addEventListener('change', setDriver);
+taskForm.addEventListener('submit', saveTask);
+document.getElementById('cancelBtn').addEventListener('click', closeForm);
+document.getElementById('deleteBtn').addEventListener('click', deleteButtonClick);
+
 
 
 toCurrentDate();
@@ -95,20 +101,44 @@ function closeDownloadForm(e) {
 }
 
 function openForm(e) {
-    document.getElementById("myForm").style.display = "block";
     let selectedCell = e.target;
     const startDateTime = new Date(parseInt(selectedCell.dataset.startDateTime))
+
+    if (selectedCell.dataset.taskId) {
+        selectedTask = currentDriver.tasks.find(task => task.id === parseInt(selectedCell.dataset.taskId))
+        document.getElementById("submitBtn").innerHTML = 'Edit';
+        document.getElementById('deleteBtn').classList.remove('hidden');
+
+    } else {
+        const newTask = 
+        {
+            id: null,
+            startDateTime: startDateTime,
+            duration: 1,
+            location: '',
+            type: 'Pickup'
+        }
+        selectedTask = newTask
+        document.getElementById("submitBtn").innerHTML = 'Add';
+        document.getElementById('deleteBtn').classList.add('hidden');
+    }
+    document.getElementById('timeInterval').value = selectedTask.duration;
+    document.getElementById('location').value = selectedTask.location;
+    document.getElementById(selectedTask.type.toLowerCase()).checked = true;
     document.getElementsByClassName('date-text')[0].innerHTML = startDateTime.toLocaleDateString();
     document.getElementsByClassName('task-time')[0].innerHTML = startDateTime.toLocaleTimeString();
     if (document.getElementsByClassName('selected-cell').length > 0) {
         document.getElementsByClassName('selected-cell')[0].classList.remove('selected-cell');
     }
     selectedCell.classList.add('selected-cell');
+    document.getElementById("myForm").classList.remove('hidden');
 }
 
 function closeForm() {
-    document.getElementsByClassName('selected-cell')[0].classList.remove('selected-cell');
-    document.getElementById("myForm").style.display = "none";
+    if (document.getElementsByClassName('selected-cell')[0]){
+        document.getElementsByClassName('selected-cell')[0].classList.remove('selected-cell');
+    }
+    document.getElementById("myForm").classList.add('hidden');
 }
 
 function changeWeek(e) {
@@ -127,8 +157,14 @@ function changeWeek(e) {
 }
 
 function addDays(date, days) {
-    var result = new Date(date);
+    let result = new Date(date);
     result.setDate(result.getDate() + days);
+    return result;
+}
+
+function addHours(date, hours) {
+    let result = new Date(date);
+    result.setHours(result.getHours() + hours)
     return result;
 }
 
@@ -160,8 +196,6 @@ function populateGrid() {
         let tasksForDate = currentDriver.tasks.filter(task => {
             return task.startDateTime >= weekday && task.startDateTime < nextDay;
         })
-        console.log(weekday);
-        console.log(tasksForDate);
 
         for (let hour = 0; hour < 24; hour++) {
             const task = tasksForDate.find( task => {
@@ -175,32 +209,58 @@ function populateGrid() {
                 cell.innerHTML= task.type;
                 cell.style = `grid-row: span ${task.duration}`;
                 hour+=task.duration -1;
-            } 
-           
-            
+                cell.dataset.taskId = task.id;
+            }    
             cell.dataset.startDateTime = weekday.valueOf(); //cant pass a date object in html
             cell.addEventListener('click', openForm);
             gridElement.appendChild(cell);
-            
         }
-
     }
 }
 
-function addTask(date, time, timeInterval, location, type) {
-    const newTask = 
-    {
-        id: getNewId(),
-        date: date,
-        time: time,
-        duration: timeInterval,
-        location: location,
-        type: type
+function saveTask(e) {
+    e.preventDefault();
+    let taskCopy = {...selectedTask}; //spread operator to clone an object
+    taskCopy.duration =  parseInt(document.getElementById('timeInterval').value);
+    taskCopy.location =  document.getElementById('location').value;
+    taskCopy.type =  document.querySelector('input[name="taskOption"]:checked').value;
+
+    const conflictingTasks = checkTask(taskCopy);
+
+    if (conflictingTasks.length > 0) {
+        let deleteTasks;
+        const taskStrings = conflictingTasks.map(task => { return `${task.type} ${task.startDateTime.toLocaleString()}`})
+        console.log(taskStrings);
+        deleteTasks = confirm("you have the following conflicting tasks: " + taskStrings + ' would you like to delete?');
+        if(deleteTasks){
+            conflictingTasks.forEach(task => deleteTask(task.id));
+        }else{
+            return
+        }
     }
-    console.log(newTask);
 
-    return(false);
+    selectedTask.duration = taskCopy.duration;
+    selectedTask.location =  taskCopy.location;
+    selectedTask.type =  taskCopy.type;
 
+    if (selectedTask.id == null) {
+        selectedTask.id = getNewId();
+        currentDriver.tasks.push(selectedTask);
+    } 
+    
+    updatePage();
+    return false;
+
+}
+
+function deleteButtonClick() {
+    deleteTask(selectedTask.id);
+    updatePage();
+}
+
+function deleteTask(taskId) {
+    const taskIndex = currentDriver.tasks.findIndex(task => task.id === taskId);
+    currentDriver.tasks.splice(taskIndex, 1);
 }
 
 function updateMonthDate() {
@@ -230,30 +290,39 @@ function setDriver(e) {
     updatePage();
 }
 
-// function getNewId() {
-//     let i;
-//     let biggestId = 0;
+function getNewId() {
+    let i;
+    let biggestId = 0;
+    for (i = 0; i < currentDriver.tasks.length; i++) {
+        if (currentDriver.tasks[i].id > biggestId) {
+            biggestId = currentDriver.tasks[i].id;
+        }
+    }
+    let newId = biggestId + 1;
+    return newId;
+}
 
-//     for (i = 0; i < articles.length; i++) {
-//         if (articles[i].id > biggestId) {
-//             biggestId = articles[i].id;
-//         }
-//     }
-//     let newId = biggestId + 1;
+function checkTask(task){
+    const newTaskEndDateTime = addHours(task.startDateTime, task.duration);
+    const conflictingTasks = [];
+    currentDriver.tasks.forEach(existingTask => {
+        if (task.id !== existingTask.id) {
+            console.log(task.id, existingTask.id);
+            const taskEndDateTime = addHours(existingTask.startDateTime, existingTask.duration);
+            if (
+                (task.startDateTime >= existingTask.startDateTime && task.startDateTime < taskEndDateTime) ||
+                (newTaskEndDateTime > existingTask.startDateTime && newTaskEndDateTime < taskEndDateTime) ||
+                (task.startDateTime <= existingTask.startDateTime && newTaskEndDateTime >= taskEndDateTime)) {
+                conflictingTasks.push(existingTask);
+            }
+        }
+    })
+    return conflictingTasks;
+}
 
-//     return newId;
-// }
 
-// function checkTask(newTaskDate, newTaskTime, driverId){
-//     for (let i = 0; i < database.length; i++) {
-//         if (database[i].id == driverId) {
-//             for (let k = 0; k < database[i].tasks.length; k++) {
-//                 database[i].tasks.findIndex( task => {
-//                     return task.date == newTaskDate && task.time == newTaskTime;
-//                 })
-//             }
-//         }
-//     }  
-// }
+
+
+
 
 

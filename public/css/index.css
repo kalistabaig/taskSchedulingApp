@@ -60,7 +60,6 @@ ul.weekdays abbr[title] {
 
 /* The popup form - hidden by default */
 .form-popup {
-  display: none;
   position: fixed;
   bottom: 0;
   right: 15px;
@@ -158,4 +157,8 @@ ul.weekdays abbr[title] {
   width: 100%;
   padding: 0;
   margin: 0;
+}
+
+.hidden {
+  display: none;
 }

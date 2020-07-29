@@ -1,5 +1,6 @@
-<div class="form-popup" id="myForm">
-    <form action="/addTask" class="task-container" method="POST">
+<div class="form-popup hidden" id="myForm">
+    
+  <form class="task-container" >
       <h1>Add Task</h1>
       <label><strong>Date</strong></label>
       <p class="date-text"></p>
@@ -9,25 +10,16 @@
       <input type="number" id="timeInterval" name="timeInterval" min="1" max="24">
       <br>
       <label><b>Location</b></label>
-      <input type="text" class="location" name="location" placeholder="Toronto">
-    
+      <input type="text" class="location" id="location" name="location" placeholder="Toronto">
       <p>Task:</p>
-     
         <input type="radio" id="pickup" name="taskOption" value="pickup">
         <label for="pickup">Pick Up</label><br>
         <input type="radio" id="dropoff" name="taskOption" value="dropoff">
         <label for="dropoff">Drop Off</label><br>
         <input type="radio" id="other" name="taskOption" value="other">
         <label for="other">Other</label>
-
-      
-
-      
-      <label for="driver"><b>Driver</b></label>
-      <p class="driver"> Selected Driver</p>
-      
-  
-      <button type="submit" class="submit-btn" onsubmit="addtask()">Add Task</button>
-      <button type="button" class="btn cancel" onclick="closeForm()">Cancel</button>
+      <button type="button" id="deleteBtn" class="hidden">Delete</button>
+      <button type="submit" id="submitBtn" class="submitbtn">Add Task</button>
+      <button type="button" id="cancelBtn" class="btn cancel">Cancel</button>
     </form>
   </div>
