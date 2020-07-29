@@ -5,7 +5,7 @@ const todayButton = document.getElementsByClassName('todayBtn')[0];
 const next_week_element = document.getElementById("nextWeek");
 const prev_week_element = document.getElementById("prevWeek");
 const taskForm = document.getElementsByClassName('task-container')[0];
-const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const weekDayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const monthDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 let firstDayOfWeek;
@@ -20,14 +20,16 @@ const drivers = [
                 startDateTime: new Date('2020-07-28T06:00:00'),
                 duration: 2,
                 location: 'toronto',
-                type: 'Pickup'
+                type: 'Pickup',
+                description: "Pick up for sheridian nurseries"
             },
             {
                 id: 1,
                 startDateTime: new Date('2020-07-30T15:00:00'),
                 duration: 3,
                 location: 'markham',
-                type: 'Dropoff'
+                type: 'Dropoff',
+                description: 'Store is located on the east side, be on the look out!'
             }
         ]
     },
@@ -40,14 +42,16 @@ const drivers = [
                 startDateTime: new Date('2020-07-26T06:00:00'),
                 duration: 1,
                 location: 'toronto',
-                type: 'Pickup'
+                type: 'Pickup',
+                description: 'mean staff beware'
             },
             {
                 id: 1,
                 startDateTime: new Date('2020-08-01T15:00:00'),
                 duration: 2,
                 location: 'markham',
-                type: 'Other'
+                type: 'Other',
+                description: 'fragile delivery contents, take it easy on the roads'
             }
 
         ]
@@ -61,14 +65,16 @@ const drivers = [
                 startDateTime: new Date('2020-07-28T06:00:00'),
                 duration: 2,
                 location: 'toronto',
-                type: 'Other'
+                type: 'Other',
+                description: 'security before you enter'
             },
             {
                 id: 1,
                 startDateTime: new Date('2020-07-31T12:00:00'),
                 duration: 4,
                 location: 'markham',
-                type: 'Dropoff'
+                type: 'Dropoff',
+                description: 'beware of guard dogs!'
             }
 
         ]
@@ -85,6 +91,7 @@ driverSelect.addEventListener('change', setDriver);
 taskForm.addEventListener('submit', saveTask);
 document.getElementById('cancelBtn').addEventListener('click', closeForm);
 document.getElementById('deleteBtn').addEventListener('click', deleteButtonClick);
+document.getElementById('createFileBtn').addEventListener('click', createCsvFile);
 
 
 
@@ -116,7 +123,8 @@ function openForm(e) {
             startDateTime: startDateTime,
             duration: 1,
             location: '',
-            type: 'Pickup'
+            type: 'Pickup',
+            description: ''
         }
         selectedTask = newTask
         document.getElementById("submitBtn").innerHTML = 'Add';
@@ -125,6 +133,7 @@ function openForm(e) {
     document.getElementById('timeInterval').value = selectedTask.duration;
     document.getElementById('location').value = selectedTask.location;
     document.getElementById(selectedTask.type.toLowerCase()).checked = true;
+    document.getElementById('taskDescription').value = selectedTask.description;
     document.getElementsByClassName('date-text')[0].innerHTML = startDateTime.toLocaleDateString();
     document.getElementsByClassName('task-time')[0].innerHTML = startDateTime.toLocaleTimeString();
     if (document.getElementsByClassName('selected-cell').length > 0) {
@@ -206,7 +215,15 @@ function populateGrid() {
             cell.classList = "day-cell"; 
             
             if (task) {
-                cell.innerHTML= task.type;
+                console.log(task.type);
+                if (task.type == 'Pickup') {
+                    cell.classList.add('pickup-cell');
+                } else if (task.type == 'Dropoff') {
+                    cell.classList.add('dropoff-cell');
+                } else {
+                    cell.classList.add('other-cell');
+                }
+                cell.innerHTML= `<div class="cell-task-type">${task.type}</div> <div class="cell-task-description">${task.description}</div>`;
                 cell.style = `grid-row: span ${task.duration}`;
                 hour+=task.duration -1;
                 cell.dataset.taskId = task.id;
@@ -224,9 +241,14 @@ function saveTask(e) {
     taskCopy.duration =  parseInt(document.getElementById('timeInterval').value);
     taskCopy.location =  document.getElementById('location').value;
     taskCopy.type =  document.querySelector('input[name="taskOption"]:checked').value;
+    taskCopy.description = document.getElementById('taskDescription').value;
+    
+    if (!checkTask(taskCopy)) {
+        return;
+    }
 
-    const conflictingTasks = checkTask(taskCopy);
-
+    const conflictingTasks = checkConflictingTasks(taskCopy);
+    
     if (conflictingTasks.length > 0) {
         let deleteTasks;
         const taskStrings = conflictingTasks.map(task => { return `${task.type} ${task.startDateTime.toLocaleString()}`})
@@ -242,12 +264,14 @@ function saveTask(e) {
     selectedTask.duration = taskCopy.duration;
     selectedTask.location =  taskCopy.location;
     selectedTask.type =  taskCopy.type;
+    selectedTask.description = taskCopy.description;
 
     if (selectedTask.id == null) {
         selectedTask.id = getNewId();
         currentDriver.tasks.push(selectedTask);
     } 
-    
+
+    closeForm()
     updatePage();
     return false;
 
@@ -301,8 +325,21 @@ function getNewId() {
     let newId = biggestId + 1;
     return newId;
 }
+function checkTask(task) {
+    const newTaskEndDateTime = addHours(task.startDateTime, task.duration);
+    const maxValidTaskEndDateTime = addDays(task.startDateTime, 1);
+    maxValidTaskEndDateTime.setHours(0,0,0,0);
 
-function checkTask(task){
+    if ( newTaskEndDateTime > maxValidTaskEndDateTime) {
+         alert('Your Task exceeds the 24 hour period, please pick a different duration time');
+         return false;
+    }
+    return true;
+    
+
+}
+
+function checkConflictingTasks(task){
     const newTaskEndDateTime = addHours(task.startDateTime, task.duration);
     const conflictingTasks = [];
     currentDriver.tasks.forEach(existingTask => {
@@ -321,7 +358,50 @@ function checkTask(task){
 }
 
 
+function createCsvFile () {
+    const days = parseInt(document.getElementById('day-range').value);
+    let csvText = 'Time-Frame, Pickup, Drop-off, Other';
+    let pickup = 0;
+    let dropoff = 0;
+    let other = 0;
+    let currentDate = new Date(firstDayOfWeek);
+    let endDate = addDays(currentDate, 52*7);
 
+    while (currentDate < endDate) {
+        pickup = 0;
+        dropoff = 0;
+        other = 0;
+
+        let intervalEndDate = addDays(currentDate, days);
+        for (let i = 0; i < currentDriver.tasks.length; i++ ){
+           let task = currentDriver.tasks[i];
+           if (task.startDateTime >= currentDate && task.startDateTime < intervalEndDate){
+               if (task.type == 'Pickup') {
+                   pickup++;
+               } else if (task.type == 'Dropoff') {
+                   dropoff++;
+               } else {
+                   other++;
+               }
+            }
+        }
+        csvText = csvText + `\n${months[currentDate.getMonth()]} ${currentDate.getDate()} - ${months[intervalEndDate.getMonth()]} ${intervalEndDate.getDate()},${pickup},${dropoff},${other}`;
+        currentDate = addDays(currentDate, days);
+    }
+
+    console.log(csvText);
+    download('DriverTaskReport.csv', csvText);
+}
+
+function download(filename, text) {
+    const element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+}
 
 
 

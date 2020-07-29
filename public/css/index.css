@@ -162,3 +162,26 @@ ul.weekdays abbr[title] {
 .hidden {
   display: none;
 }
+
+.pickup-cell {
+  background-color: lightcoral;
+}
+
+.dropoff-cell {
+  background-color: lightskyblue;
+}
+
+.other-cell {
+  background-color: lightgreen;
+}
+
+.cell-task-type {
+  font-size: large;
+}
+
+.cell-task-description {
+  font-weight: 300;
+  color: grey;
+}
+
+

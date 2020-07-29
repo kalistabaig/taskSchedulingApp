@@ -1,8 +1,18 @@
 <div class="download-form" id="download-form">
-    <form action="/getCsv" class="download-container" method="POST">
+    <form class="download-container">
       <h1>Driver Task Spread Sheet Report</h1>
-            <p>Date Range: <input type="number" name="days"> 
-      <button type="submit" class="download-btn">Create .csv</button>
-      <button type="button" class="btn cancel" onclick="closeDownloadForm()">Cancel</button>
+      <form>
+        <label for="day-range">Days</label>
+        <select name="day-range" id="day-range" class="day-range">
+            <option name="days" value="2" selected>2</option>
+            <option name="days" value="4" >4</option>
+            <option name="days" value="7">7</option>
+            <option name="days" value="14">14</option>
+            <option name="days" value="28">28</option>
+        </select>
+        <button type="button" id="createFileBtn" class="create-file-btn">Create .csv</button>
+        <button type="button" class="btn cancel" onclick="closeDownloadForm()">Cancel</button>
+      </form>
+     
     </form>
 </div>
