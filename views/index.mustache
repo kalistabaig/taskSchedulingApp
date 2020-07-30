@@ -16,18 +16,18 @@
             <option name="driver" value="2">Matthew</option>
         </select>
       </div>
-    <header>
-      <div class="month-picker">
-        <button id="today-btn">Today</button>
-        <div class="prev-week" id="prev-week">&lt</div>
-        <div class="next-week" id="next-week">&gt</div>
-        <div class="month" id="month"></div>    
-      </div>
-      <div style="flex-grow: 1;"></div>
-      <button id="download-btn"> Download CSV</button>
-    </header>
-        <div id="day-grid" class="day-grid"></div>
-      </div>
+      <header>
+        <div class="month-picker">
+          <button id="today-btn">Today</button>
+          <div class="prev-week" id="prev-week">&lt</div>
+          <div class="next-week" id="next-week">&gt</div>
+          <div class="month" id="month"></div>    
+        </div>
+        <div style="flex-grow: 1;"></div>
+        <button id="download-btn">Download .csv</button>
+      </header>
+      <div id="day-grid" class="day-grid"></div>
+    </div>
     {{>downloadForm}}
     {{>popupForm}}
     <script src="/js/index.js"></script>

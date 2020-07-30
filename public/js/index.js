@@ -16,14 +16,14 @@ function populateGrid() {
       }
 
     const timeDiv = document.createElement('div');
-    timeDiv.innerHTML = "Time"
+    timeDiv.innerHTML = 'Time';
     gridElement.appendChild(timeDiv);
 
     //time column for loop
     for (let i = 0; i < 24; i++) {
         const cell = document.createElement('div');
-        cell.classList = "time-cell";
-        cell.innerHTML = i.toString().padStart(2,"0") + ":00";
+        cell.classList = 'time-cell';
+        cell.innerHTML = i.toString().padStart(2,'0') + ':00';
         gridElement.appendChild(cell);
     }
     createDayCells(gridElement);
@@ -50,7 +50,7 @@ function createDayCells(gridElement) {
             });
             weekday.setHours(hour, 0, 0, 0);
             const cell = document.createElement('div');
-            cell.classList = "day-cell";
+            cell.classList = 'day-cell';
             if (task) {
                 if (task.type == 'Pickup') {
                     cell.classList.add('pickup-cell');
@@ -74,11 +74,11 @@ function createDayCells(gridElement) {
 }
 
 function openDownloadForm(e) {
-    document.getElementById("download-form").classList.remove('hidden');
+    document.getElementById('download-form').classList.remove('hidden');
 }
 
 function closeDownloadForm(e) {
-    document.getElementById("download-form").classList.add('hidden');
+    document.getElementById('download-form').classList.add('hidden');
 }
 
 function openTaskForm(e) {
@@ -87,8 +87,9 @@ function openTaskForm(e) {
 
     if (selectedCell.dataset.taskId) {
         selectedTask = currentDriver.tasks.find(task => task.id === parseInt(selectedCell.dataset.taskId))
-        document.getElementById("submit-btn").innerHTML = 'Edit';
+        document.getElementById('submit-btn').innerHTML = 'Edit';
         document.getElementById('delete-btn').classList.remove('hidden');
+        document.getElementById('popup-task-form-header').innerHTML = 'Edit Task';
     } else {
         const newTask = 
         {
@@ -100,8 +101,9 @@ function openTaskForm(e) {
             description: ''
         }
         selectedTask = newTask
-        document.getElementById("submit-btn").innerHTML = 'Add';
+        document.getElementById('submit-btn').innerHTML = 'Add';
         document.getElementById('delete-btn').classList.add('hidden');
+        document.getElementById('popup-task-form-header').innerHTML = 'Add Task';
     }
     
     populateTaskForm();
@@ -109,14 +111,14 @@ function openTaskForm(e) {
         document.getElementsByClassName('selected-cell')[0].classList.remove('selected-cell');
     }
     selectedCell.classList.add('selected-cell');
-    document.getElementById("popup-task-form").classList.remove('hidden');
+    document.getElementById('popup-task-form').classList.remove('hidden');
 }
 
 function populateTaskForm() {
-    document.getElementById('timeInterval').value = selectedTask.duration;
+    document.getElementById('time-interval').value = selectedTask.duration;
     document.getElementById('location').value = selectedTask.location;
     document.getElementById(selectedTask.type.toLowerCase()).checked = true;
-    document.getElementById('taskDescription').value = selectedTask.description;
+    document.getElementById('task-description').value = selectedTask.description;
     document.getElementById('date-text').innerHTML = selectedTask.startDateTime.toLocaleDateString();
     document.getElementById('task-time').innerHTML = selectedTask.startDateTime.toLocaleTimeString();
 }
@@ -125,7 +127,13 @@ function closeTaskForm() {
     if (document.getElementsByClassName('selected-cell')[0]){
         document.getElementsByClassName('selected-cell')[0].classList.remove('selected-cell');
     }
-    document.getElementById("popup-task-form").classList.add('hidden');
+    document.getElementById('popup-task-form').classList.add('hidden');
+}
+
+function dismissTaskForm(e) {
+    if (e.target.id === 'popup-task-form') {
+        closeTaskForm();
+    }
 }
 
 function changeWeek(e) {
@@ -143,28 +151,17 @@ function changeWeek(e) {
 function saveTask(e) {
     e.preventDefault();
     let taskCopy = {...selectedTask}; //spread operator to clone an object
-    taskCopy.duration =  parseInt(document.getElementById('timeInterval').value);
+    taskCopy.duration =  parseInt(document.getElementById('time-interval').value);
     taskCopy.location =  document.getElementById('location').value;
     taskCopy.type =  document.querySelector('input[name="taskOption"]:checked').value;
-    taskCopy.description = document.getElementById('taskDescription').value;
+    taskCopy.description = document.getElementById('task-description').value;
     
     if (!checkTask(taskCopy)) {
         return;
+
     }
 
-    const conflictingTasks = checkConflictingTasks(taskCopy);
-    
-    if (conflictingTasks.length > 0) {
-        let deleteTasks;
-        const taskStrings = conflictingTasks.map(task => { return `${task.type} ${task.startDateTime.toLocaleString()}`})
-        console.log(taskStrings);
-        deleteTasks = confirm("you have the following conflicting tasks: " + taskStrings + ' would you like to delete?');
-        if(deleteTasks){
-            conflictingTasks.forEach(task => deleteTask(task.id));
-        }else{
-            return
-        }
-    }
+ 
 
     selectedTask.duration = taskCopy.duration;
     selectedTask.location =  taskCopy.location;
@@ -178,8 +175,6 @@ function saveTask(e) {
 
     closeTaskForm()
     updatePage();
-    return false;
-
 }
 
 function deleteButtonClick() {
@@ -196,9 +191,9 @@ function updateMonthDate() {
     const month_element = document.getElementById('month');
     const lastDayOfWeek = addDays(firstDayOfWeek, 6);
     if (lastDayOfWeek.getMonth() != firstDayOfWeek.getMonth()) {
-        month_element.innerHTML = getMonthShortName(firstDayOfWeek) + ' ' + firstDayOfWeek.getFullYear() + " - " + getMonthShortName(lastDayOfWeek) + ' ' + lastDayOfWeek.getFullYear();
+        month_element.innerHTML = `${getMonthShortName(firstDayOfWeek)} ${firstDayOfWeek.getFullYear()} - ${getMonthShortName(lastDayOfWeek)} ${lastDayOfWeek.getFullYear()}`;
     }else{
-        month_element.innerHTML = getMonthShortName(firstDayOfWeek) + ' ' + firstDayOfWeek.getFullYear()
+        month_element.innerHTML = `${getMonthShortName(firstDayOfWeek)} ${firstDayOfWeek.getFullYear()}`;
     }
 }
 
@@ -207,7 +202,7 @@ function updatePage() {
     updateMonthDate();
 }
 
-function toCurrentDate() {
+function displayCurrentDate() {
     let currentDate = new Date();
     const numMilliSecondsInDay = 24*60*60*1000;
     firstDayOfWeek = new Date(currentDate.valueOf() - (currentDate.getDay()*numMilliSecondsInDay)); 
@@ -232,30 +227,43 @@ function getNewId() {
     return newId;
 }
 function checkTask(task) {
+    // Checks if the task will not extend across multiple days
     const newTaskEndDateTime = addHours(task.startDateTime, task.duration);
     const maxValidTaskEndDateTime = addDays(task.startDateTime, 1);
     maxValidTaskEndDateTime.setHours(0,0,0,0);
-
     if ( newTaskEndDateTime > maxValidTaskEndDateTime) {
-         alert('Your Task exceeds the 24 hour period, please pick a different duration time');
+        const overTime = newTaskEndDateTime.getHours();
+         alert(`Your task extends across multiple days by ${overTime} hours. Reschedule for an earlier time or reduce the duration of the task`);
          return false;
     }
-    return true;
-    
 
+    // Checks for conflicting tasks and allows the user to delete them 
+    const conflictingTasks = checkConflictingTasks(task);
+    if (conflictingTasks.length > 0) {
+        const taskStrings = conflictingTasks.map(task => `${task.type} ${task.startDateTime.toLocaleString()}`);
+        const taskString = taskStrings.join('\n');
+        const deleteTasks = confirm(`You have the following conflicting tasks:\n${taskString}\nWould you like to delete the tasks?`);
+        if (deleteTasks) {
+            conflictingTasks.forEach(task => deleteTask(task.id));
+        } else {
+            return false; 
+        }
+    }
+    return true;
 }
 
-function checkConflictingTasks(task){
-    const newTaskEndDateTime = addHours(task.startDateTime, task.duration);
+function checkConflictingTasks(task) {
+    const taskStartDateTime = task.startDateTime;
+    const taskEndDateTime = addHours(task.startDateTime, task.duration);
     const conflictingTasks = [];
     currentDriver.tasks.forEach(existingTask => {
         if (task.id !== existingTask.id) {
-            console.log(task.id, existingTask.id);
-            const taskEndDateTime = addHours(existingTask.startDateTime, existingTask.duration);
+            const existingTaskStartDateTime = existingTask.startDateTime
+            const existingTaskEndDateTime = addHours(existingTask.startDateTime, existingTask.duration);
             if (
-                (task.startDateTime >= existingTask.startDateTime && task.startDateTime < taskEndDateTime) ||
-                (newTaskEndDateTime > existingTask.startDateTime && newTaskEndDateTime < taskEndDateTime) ||
-                (task.startDateTime <= existingTask.startDateTime && newTaskEndDateTime >= taskEndDateTime)) {
+                (taskStartDateTime >= existingTaskStartDateTime && taskStartDateTime < existingTaskEndDateTime) ||
+                (taskEndDateTime > existingTaskStartDateTime && taskEndDateTime < existingTaskEndDateTime) ||
+                (taskStartDateTime <= existingTaskStartDateTime && taskEndDateTime >= existingTaskEndDateTime)) {
                 conflictingTasks.push(existingTask);
             }
         }
@@ -263,25 +271,20 @@ function checkConflictingTasks(task){
     return conflictingTasks;
 }
 
-
 function createCsvFile () {
     const days = parseInt(document.getElementById('day-range').value);
     let csvText = 'Time-Frame, Pickup, Drop-off, Other';
-    let pickup = 0;
-    let dropoff = 0;
-    let other = 0;
     let currentDate = new Date(firstDayOfWeek);
     let endDate = addDays(currentDate, 52*7);
 
     while (currentDate < endDate) {
-        pickup = 0;
-        dropoff = 0;
-        other = 0;
-
+        let pickup = 0;
+        let dropoff = 0;
+        let other = 0;
         let intervalEndDate = addDays(currentDate, days);
-        for (let i = 0; i < currentDriver.tasks.length; i++ ){
+        for (let i = 0; i < currentDriver.tasks.length; i++ ) {
            let task = currentDriver.tasks[i];
-           if (task.startDateTime >= currentDate && task.startDateTime < intervalEndDate){
+           if (task.startDateTime >= currentDate && task.startDateTime < intervalEndDate) {
                if (task.type == 'Pickup') {
                    pickup++;
                } else if (task.type == 'Dropoff') {
@@ -294,26 +297,15 @@ function createCsvFile () {
         csvText = csvText + `\n${getMonthShortName(currentDate)} ${currentDate.getDate()} - ${getMonthShortName(intervalEndDate)} ${intervalEndDate.getDate()},${pickup},${dropoff},${other}`;
         currentDate = addDays(currentDate, days);
     }
-
-    console.log(csvText);
     download('DriverTaskReport.csv', csvText);
 }
 
-function download(filename, text) {
-    const element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-    element.setAttribute('download', filename);
-    element.style.display = 'none';
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
-}
 // Functions
 
 function loadDrivers() {
    drivers =  [
        { 
-           name: "Kali",
+           name: 'Kali',
            id: 0,
            tasks: [
                {
@@ -322,7 +314,7 @@ function loadDrivers() {
                     duration: 2,
                     location: 'toronto',
                     type: 'Pickup',
-                    description: "Pick up for sheridian nurseries"
+                    description: 'Pick up for sheridian nurseries'
                 },
                 {
                     id: 1,
@@ -335,7 +327,7 @@ function loadDrivers() {
             ]
         },
         {
-            name: "Karisma",
+            name: 'Karisma',
             id: 1,
             tasks: [
                 {
@@ -358,7 +350,7 @@ function loadDrivers() {
             ]
          },
          {
-            name: "Matthew",
+            name: 'Matthew',
             id: 2,
             tasks: [
                 {
@@ -381,21 +373,22 @@ function loadDrivers() {
         } 
     ];
     currentDriver = drivers[0];
-    toCurrentDate();
+    displayCurrentDate();
 }
 
 // Event Handler Functions
 function setEventListeners() {
-    document.getElementById("next-week").addEventListener('click', changeWeek);
-    document.getElementById("prev-week").addEventListener('click', changeWeek);
+    document.getElementById('next-week').addEventListener('click', changeWeek);
+    document.getElementById('prev-week').addEventListener('click', changeWeek);
     document.getElementById('download-btn').addEventListener('click', openDownloadForm);
-    document.getElementById('today-btn').addEventListener('click', toCurrentDate);
+    document.getElementById('today-btn').addEventListener('click', displayCurrentDate);
     document.getElementById('drivers').addEventListener('change', setDriver);
     document.getElementById('task-container').addEventListener('submit', saveTask);
     document.getElementById('cancel-btn').addEventListener('click', closeTaskForm);
     document.getElementById('download-close-btn').addEventListener('click', closeDownloadForm)
     document.getElementById('delete-btn').addEventListener('click', deleteButtonClick);
     document.getElementById('create-file-btn').addEventListener('click', createCsvFile);
+    document.getElementById('popup-task-form').addEventListener('click', dismissTaskForm);
 }
 
 // Helper Functions
@@ -415,6 +408,16 @@ function addHours(date, hours) {
     const result = new Date(date);
     result.setHours(result.getHours() + hours)
     return result;
+}
+
+function download(filename, text) {
+    const element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
 }
 
 

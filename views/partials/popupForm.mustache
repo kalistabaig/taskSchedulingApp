@@ -1,27 +1,33 @@
 <div class="form-popup hidden" id="popup-task-form">
-    
   <form id="task-container" class="task-container" >
-      <h1>Add Task</h1>
-      <label><strong>Date</strong></label>
+      <h1 id="popup-task-form-header">Add Task</h1>
+      <label class="form-label">Date:</label>
       <div id="date-text" class="date-text"></div>
-      <label><strong>Time</strong></label>
+      <label class="form-label">Time:</label>
       <div id="task-time" class="task-time">12:00</div>
-      <label for="timeInterval">Time Interval</label>
-      <input type="number" id="timeInterval" name="timeInterval" min="1" max="24">
-      <br>
-      <label><b>Location</b></label>
-      <input type="text" class="location" id="location" name="location" placeholder="Toronto">
-      <p>Task:</p>
-      <input type="radio" id="pickup" name="taskOption" value="Pickup">
-      <label for="pickup">Pick Up</label><br>
-      <input type="radio" id="dropoff" name="taskOption" value="Dropoff">
-      <label for="dropoff">Drop Off</label><br>
-      <input type="radio" id="other" name="taskOption" value="Other">
-      <label for="other">Other</label>
-      <label for="description" id="description" name="description">Description</label>
-      <input type="text" name="description" class="task-description" id="taskDescription">
-      <button type="button" id="delete-btn" class="hidden">Delete</button>
-      <button type="submit" id="submit-btn" class="submitbtn">Add Task</button>
-      <button type="button" id="cancel-btn" class="btn cancel">Cancel</button>
+      <label class="form-label" for="time-interval">Time Interval:</label>
+      <input type="number" id="time-interval" name="time-interval" min="1" max="24" required>
+      <label class="form-label">Location:</label>
+      <input type="text" class="location" id="location" name="location" placeholder="Toronto" required>
+      <label class="form-label">Task:</label>
+      <div>  
+        <input type="radio" id="pickup" name="taskOption" value="Pickup">
+        <label for="pickup">Pick Up</label>
+      </div>
+      <div>
+        <input type="radio" id="dropoff" name="taskOption" value="Dropoff">
+        <label for="dropoff">Drop Off</label>
+      </div>
+      <div>
+        <input type="radio" id="other" name="taskOption" value="Other">
+        <label for="other">Other</label>
+      </div>
+      <label class="form-label" for="description" id="description" name="description">Description:</label>
+      <input type="text" name="description" class="task-description" id="task-description" required>
+      <div>
+        <button type="button" id="delete-btn" class="hidden">Delete</button>
+        <button type="submit" id="submit-btn" class="submit-btn">Add Task</button>
+        <button type="button" id="cancel-btn" class="btn cancel">Cancel</button>
+      </div>
     </form>
   </div>
