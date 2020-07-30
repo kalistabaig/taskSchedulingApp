@@ -158,7 +158,7 @@ function dismissTaskForm(e) {
     }
 }
 
-function dismissTaskForm(e) {
+function dismissDownloadTaskForm(e) {
     if (e.target.id === 'download-form') {
         closeDownloadForm();
     }
@@ -270,7 +270,14 @@ function checkTask(task) {
     if (conflictingTasks.length > 0) {
         const taskStrings = conflictingTasks.map(task => `${task.type} ${task.startDateTime.toLocaleString()}`);
         const taskString = taskStrings.join('\n');
-        const deleteTasks = confirm(`You have the following conflicting tasks:\n${taskString}\nWould you like to delete the tasks?`);
+        const nextAvailableDateTime = getNextAvailableDateTime(task);
+        let message;
+        if(nextAvailableDateTime) {
+            message = `You have the following conflicting tasks:\n\n${taskString}\n\nThe next available time slot is: ${nextAvailableDateTime.toLocaleString()}.\nWould you like to delete the tasks?`;
+        } else {
+            message = `You have the following conflicting tasks:\n\n${taskString}\n\nThere are no available time slots within the week.\nWould you like to delete the tasks?`
+        }
+        const deleteTasks = confirm(message);
         if (deleteTasks) {
             conflictingTasks.forEach(task => deleteTask(task.id));
         } else {
@@ -298,6 +305,45 @@ function checkConflictingTasks(task) {
     })
     return conflictingTasks;
 }
+
+function getNextAvailableDateTime(task) {
+    const numberOfDaysToCheck = 7;
+    let dayToCheck = addDays(task.startDateTime, 0);
+    dayToCheck.setHours(0, 0, 0, 0);
+    for (let i = 0; i < numberOfDaysToCheck; i++) {
+        const nextAvailableDateTime = getNextAvailableDateTimeForDay(dayToCheck, task.duration);
+        if (nextAvailableDateTime) {
+            return nextAvailableDateTime;
+        }
+        dayToCheck = addDays(dayToCheck, 1);
+    }
+    return null;    
+}
+
+function getNextAvailableDateTimeForDay(day, duration) {
+    console.log('day:' , day, 'duration:', duration);
+    const nextDay = addDays(day, 1);
+    let tasksForDate = currentDriver.tasks.filter(task => {
+        return task.startDateTime >= day && task.startDateTime < nextDay;
+    });
+    tasksForDate.sort((taskA, taskB) => taskA.startDateTime - taskB.startDateTime)
+    currentHour = 0;
+    while (currentHour <= (24 - duration)) {
+        const nextTask = tasksForDate.find(task => task.startDateTime.getHours() >= currentHour);
+        console.log(nextTask);
+        if (nextTask) {
+            const hoursUntilNextTask = nextTask.startDateTime.getHours() - currentHour;
+            if (duration <= hoursUntilNextTask) {
+                return addHours(day, currentHour);
+            }
+            currentHour = addHours(nextTask.startDateTime, nextTask.duration).getHours();
+        } else {
+            return addHours(day, currentHour);
+        }
+    }
+    return null;
+}
+
 
 function createCsvFile() {
     download('DriverTaskReport.csv', reportCsvString);
@@ -424,7 +470,7 @@ function setEventListeners() {
     document.getElementById('create-file-btn').addEventListener('click', createCsvFile);
     document.getElementById('popup-task-form').addEventListener('click', dismissTaskForm);
     document.getElementById('day-range').addEventListener('change', populateReport)
-    document.getElementById('download-form').addEventListener('click', dismissTaskForm);
+    document.getElementById('download-form').addEventListener('click', dismissDownloadTaskForm);
 }
 
 // Helper Functions

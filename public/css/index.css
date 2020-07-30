@@ -110,8 +110,20 @@ header {
   opacity: 0.8;
 }
 
-.task-container .cancel {
+#delete-btn {
   background-color: red;
+  color: white;
+  padding: 16px 20px;
+  border: none;
+  cursor: pointer;
+  width: 100px;
+  margin-bottom:10px;
+  margin-top: 10px;
+  opacity: 0.8;
+}
+
+.task-container .cancel {
+  background-color: black;
   color: white;
   padding: 16px 20px;
   border: none;
