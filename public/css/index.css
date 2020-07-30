@@ -1,20 +1,33 @@
+:root {
+  --accent-color: #1e398f;
+  --grid-border-color: lightgray;
+}
+
+* {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
 header {
   display: flex;
   align-items: center;
-  justify-content: center;
-  margin-bottom: 2em;
+  justify-content: left;
+  margin: 0px 20px 30px 60px;
   min-height: 10vh;
   text-align: center;
 }
 
+.driver-selection {
+  margin-top: 30px;
+  margin-left: 60px;
+}
+
 .day-grid {
   display: grid;
-  grid-template-columns: 40px repeat(7, 1fr);
+  grid-template-columns: 50px repeat(7, minmax(100px, 1fr));
   grid-auto-flow: column;
   grid-template-rows: 50px repeat(24, 100px);
   grid-gap: 0em;
-  margin: 0 auto;
-  max-width: 64em;
+  margin: 10px 20px;
   padding: 0;
 }
 
@@ -34,7 +47,19 @@ header {
 }
 
 .day-cell{
-  border: 1px solid ;
+  border: 1px solid var(--grid-border-color);
+  overflow: hidden;
+}
+
+.time-cell{
+  border-right: 1px solid var(--grid-border-color);
+}
+
+.date-cell{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-bottom: 1px solid var(--grid-border-color);
 }
 
 ul.weekdays abbr[title] {
@@ -43,8 +68,6 @@ ul.weekdays abbr[title] {
   text-decoration: none;
 }
   
-
-/* Button used to open the contact form - fixed at the bottom of the page */
 .open-button {
   background-color: #000;
   color: white;
@@ -58,7 +81,6 @@ ul.weekdays abbr[title] {
   width: 280px;
 }
 
-/* The popup form - hidden by default */
 .form-popup {
   position: fixed;
   bottom: 0;
@@ -77,14 +99,12 @@ ul.weekdays abbr[title] {
   z-index: 9;
 }
 
-/* Add styles to the form container */
 .task-container {
   max-width: 300px;
   padding: 10px;
   background-color: white;
 }
 
-/* Set a style for the submit/login button */
 .task-container .submit-btn {
   background-color: #4CAF50;
   color: white;
@@ -106,12 +126,10 @@ ul.weekdays abbr[title] {
   opacity: 0.8;
 }
 
-/* Add a red background color to the cancel button */
 .task-container .cancel {
   background-color: red;
 }
 
-/* Add some hover effects to buttons */
 .task-container {
   opacity: 1;
 }
@@ -124,9 +142,7 @@ ul.weekdays abbr[title] {
 
 .month-picker {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 5px;
 }
 
 .arrows {
@@ -164,7 +180,7 @@ ul.weekdays abbr[title] {
 }
 
 .pickup-cell {
-  background-color: lightcoral;
+  background-color: lavender;
 }
 
 .dropoff-cell {
@@ -180,8 +196,28 @@ ul.weekdays abbr[title] {
 }
 
 .cell-task-description {
+  font-size: 10px;
+  padding-top: 5px;
   font-weight: 300;
-  color: grey;
+  pointer-events: none;
 }
+
+
+.cell-task-type {
+  font-size: 12px;
+  font-weight: bolder;
+  pointer-events: none;
+
+}
+
+.cell-task-location {
+  font-size: 11px;
+  pointer-events: none;
+  text-decoration: underline;
+}
+
+
+
+
 
 

@@ -86,6 +86,7 @@ let currentDriver = drivers[0];
 // add event listener to arrows so when they are clicked it changes the dates 
 next_week_element.addEventListener('click', changeWeek);
 prev_week_element.addEventListener('click', changeWeek);
+document.getElementById('downloadBtn').addEventListener('click', openDownloadForm);
 todayButton.addEventListener('click', toCurrentDate);
 driverSelect.addEventListener('change', setDriver);
 taskForm.addEventListener('submit', saveTask);
@@ -191,12 +192,13 @@ function populateGrid() {
     for (let i = 0; i < 24; i++) {
         const cell = document.createElement('div');
         cell.classList = "time-cell";
-        cell.innerHTML = i + ":00";
+        cell.innerHTML = i.toString().padStart(2,"0") + ":00";
         gridElement.appendChild(cell);
     }
 
     for (let day = 0; day < 7; day++) {
         const weekdayCell = document.createElement('div');
+        weekdayCell.classList.add('date-cell');
         const weekday = addDays(firstDayOfWeek, day);
         weekdayCell.innerHTML = `<div>${weekDayNames[weekday.getDay()]}</div><div>${weekday.getDate()}</div>`; 
         gridElement.appendChild(weekdayCell);
@@ -215,7 +217,6 @@ function populateGrid() {
             cell.classList = "day-cell"; 
             
             if (task) {
-                console.log(task.type);
                 if (task.type == 'Pickup') {
                     cell.classList.add('pickup-cell');
                 } else if (task.type == 'Dropoff') {
@@ -223,7 +224,7 @@ function populateGrid() {
                 } else {
                     cell.classList.add('other-cell');
                 }
-                cell.innerHTML= `<div class="cell-task-type">${task.type}</div> <div class="cell-task-description">${task.description}</div>`;
+                cell.innerHTML= `<div class="cell-task-type">${task.type}</div><div class="cell-task-location">${task.location}</div><div class="cell-task-description">${task.description}</div>`;
                 cell.style = `grid-row: span ${task.duration}`;
                 hour+=task.duration -1;
                 cell.dataset.taskId = task.id;

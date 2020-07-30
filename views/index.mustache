@@ -8,34 +8,27 @@
 </head>
 <body>
     <div class="calendar">
-            <button class="todayBtn">Today</button>
-            <button onclick="openDownloadForm()"> Download CSV</button>
-
-            <form action="/displayDriverTaskSheet">
-              <label for="drivers">Driver:</label>
-              <select name="drivers" class="drivers">
-                  <option name="driver" value="0" >Kalista</option>
-                  <option name="driver" value="1" >Karisma</option>
-                  <option name="driver" value="2">Matthew</option>
-              </select>
-            </form>
-
-              
-
-          <header>
-            <div class="month-picker">
-           
-              <div class="month" id="month"></div>
-              <div class="arrows prev-week" id="prevWeek">&lt</div>
-              <div class="arrows next-week" id="nextWeek">&gt</div>
-            </div>
-        </header>
+      <div class="driver-selection">
+        <label for="drivers">Driver:</label>
+        <select name="drivers" class="drivers">
+            <option name="driver" value="0" >Kalista</option>
+            <option name="driver" value="1" >Karisma</option>
+            <option name="driver" value="2">Matthew</option>
+        </select>
+      </div>
+    <header>
+      <div class="month-picker">
+        <button class="todayBtn">Today</button>
+        <div class="arrows prev-week" id="prevWeek">&lt</div>
+        <div class="arrows next-week" id="nextWeek">&gt</div>
+        <div class="month" id="month"></div>    
+      </div>
+      <div style="flex-grow: 1;"></div>
+      <button id="downloadBtn"> Download CSV</button>
+    </header>
         {{>layout}}
-       
-    </div>
-
+      </div>
     {{>downloadForm}}
-
     {{>popupForm}}
     <script src="/js/index.js"></script>
 </body>
