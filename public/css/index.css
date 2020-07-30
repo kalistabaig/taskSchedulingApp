@@ -69,17 +69,22 @@ header {
   height: 100%;
 }
 
-.download-form {
-  background-color: var(--accent-color);
-  color: white;
-  position: fixed;
-  bottom: 0;
-  right: 15px;
-  border: 3px solid #f1f1f1;
+.download-container {
+  position: absolute;
+  background-color: white;
+  box-shadow: 0 0 10px #888888;
+  border-radius: 8px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   z-index: 9;
+  width: 450px;
+  height: 330px;
+  padding: 10px;
+
 }
 
-.task-container {
+.task-container{
   position: absolute;
   background-color: white;
   box-shadow: 0 0 10px #888888;
@@ -188,3 +193,22 @@ header {
   display: block;
   font-weight: bold;
 }
+
+.driver-report-grid-container{
+  overflow: scroll;
+  margin-top: 10px;
+  height: 200px;
+}
+
+.driver-report-grid {
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  grid-auto-rows: auto;
+  grid-gap: 0em;
+  padding: 0;
+}
+
+.report-cell {
+  border: 1px solid var(--grid-border-color);
+}
+

@@ -2,6 +2,7 @@ let firstDayOfWeek;
 let selectedTask;
 let drivers = [];
 let currentDriver; 
+let reportCsvString;
 
 setEventListeners();
 loadDrivers();
@@ -13,7 +14,7 @@ function populateGrid() {
 
     while (gridElement.hasChildNodes()) {   
         gridElement.removeChild(gridElement.firstChild);
-      }
+    }
 
     const timeDiv = document.createElement('div');
     timeDiv.innerHTML = 'Time';
@@ -75,10 +76,31 @@ function createDayCells(gridElement) {
 
 function openDownloadForm(e) {
     document.getElementById('download-form').classList.remove('hidden');
+    document.getElementById('report-header').innerHTML = `${currentDriver.name}'s Report`;
+    populateReport();
 }
+
 
 function closeDownloadForm(e) {
     document.getElementById('download-form').classList.add('hidden');
+}
+
+function populateReport() {
+    reportCsvString =  createCsvString();
+    const gridElement = document.getElementById('driver-report-grid');
+    while (gridElement.hasChildNodes()) {   
+        gridElement.removeChild(gridElement.firstChild);
+    }
+    const rows = reportCsvString.split('\n');
+    for (row of rows) {
+        let cols = row.split(',');
+        for (col of cols) {
+            let cell =  document.createElement('div');
+            cell.classList.add('report-cell');
+            cell.innerHTML = col;
+            gridElement.appendChild(cell);
+        }
+    }
 }
 
 function openTaskForm(e) {
@@ -133,6 +155,12 @@ function closeTaskForm() {
 function dismissTaskForm(e) {
     if (e.target.id === 'popup-task-form') {
         closeTaskForm();
+    }
+}
+
+function dismissTaskForm(e) {
+    if (e.target.id === 'download-form') {
+        closeDownloadForm();
     }
 }
 
@@ -271,33 +299,39 @@ function checkConflictingTasks(task) {
     return conflictingTasks;
 }
 
-function createCsvFile () {
+function createCsvFile() {
+    download('DriverTaskReport.csv', reportCsvString);
+}
+
+function createCsvString() {
     const days = parseInt(document.getElementById('day-range').value);
     let csvText = 'Time-Frame, Pickup, Drop-off, Other';
     let currentDate = new Date(firstDayOfWeek);
-    let endDate = addDays(currentDate, 52*7);
+    let endDate = addDays(currentDate, 52 * 7);
 
     while (currentDate < endDate) {
         let pickup = 0;
         let dropoff = 0;
         let other = 0;
         let intervalEndDate = addDays(currentDate, days);
-        for (let i = 0; i < currentDriver.tasks.length; i++ ) {
-           let task = currentDriver.tasks[i];
-           if (task.startDateTime >= currentDate && task.startDateTime < intervalEndDate) {
-               if (task.type == 'Pickup') {
-                   pickup++;
-               } else if (task.type == 'Dropoff') {
-                   dropoff++;
-               } else {
-                   other++;
-               }
+        for (let i = 0; i < currentDriver.tasks.length; i++) {
+            let task = currentDriver.tasks[i];
+            if (task.startDateTime >= currentDate && task.startDateTime < intervalEndDate) {
+                if (task.type == 'Pickup') {
+                    pickup++;
+                }
+                else if (task.type == 'Dropoff') {
+                    dropoff++;
+                }
+                else {
+                    other++;
+                }
             }
         }
         csvText = csvText + `\n${getMonthShortName(currentDate)} ${currentDate.getDate()} - ${getMonthShortName(intervalEndDate)} ${intervalEndDate.getDate()},${pickup},${dropoff},${other}`;
         currentDate = addDays(currentDate, days);
     }
-    download('DriverTaskReport.csv', csvText);
+    return csvText;
 }
 
 // Functions
@@ -305,7 +339,7 @@ function createCsvFile () {
 function loadDrivers() {
    drivers =  [
        { 
-           name: 'Kali',
+           name: 'Kalista',
            id: 0,
            tasks: [
                {
@@ -389,6 +423,8 @@ function setEventListeners() {
     document.getElementById('delete-btn').addEventListener('click', deleteButtonClick);
     document.getElementById('create-file-btn').addEventListener('click', createCsvFile);
     document.getElementById('popup-task-form').addEventListener('click', dismissTaskForm);
+    document.getElementById('day-range').addEventListener('change', populateReport)
+    document.getElementById('download-form').addEventListener('click', dismissTaskForm);
 }
 
 // Helper Functions
