@@ -90,8 +90,8 @@ ul.weekdays abbr[title] {
 }
 
 .download-form {
-  background-color: burlywood;
-  display: none;
+  background-color: var(--accent-color);
+  color: white;
   position: fixed;
   bottom: 0;
   right: 15px;
@@ -145,7 +145,7 @@ ul.weekdays abbr[title] {
   align-items: center;
 }
 
-.arrows {
+.prev-week, .next-week {
   width: 35px;
   height: 35px;
   display: flex;
@@ -214,6 +214,10 @@ ul.weekdays abbr[title] {
   font-size: 11px;
   pointer-events: none;
   text-decoration: underline;
+}
+
+#description {
+  display: block;
 }
 
 

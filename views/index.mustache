@@ -10,7 +10,7 @@
     <div class="calendar">
       <div class="driver-selection">
         <label for="drivers">Driver:</label>
-        <select name="drivers" class="drivers">
+        <select name="drivers" id="drivers">
             <option name="driver" value="0" >Kalista</option>
             <option name="driver" value="1" >Karisma</option>
             <option name="driver" value="2">Matthew</option>
@@ -18,15 +18,15 @@
       </div>
     <header>
       <div class="month-picker">
-        <button class="todayBtn">Today</button>
-        <div class="arrows prev-week" id="prevWeek">&lt</div>
-        <div class="arrows next-week" id="nextWeek">&gt</div>
+        <button id="today-btn">Today</button>
+        <div class="prev-week" id="prev-week">&lt</div>
+        <div class="next-week" id="next-week">&gt</div>
         <div class="month" id="month"></div>    
       </div>
       <div style="flex-grow: 1;"></div>
-      <button id="downloadBtn"> Download CSV</button>
+      <button id="download-btn"> Download CSV</button>
     </header>
-        {{>layout}}
+        <div id="day-grid" class="day-grid"></div>
       </div>
     {{>downloadForm}}
     {{>popupForm}}

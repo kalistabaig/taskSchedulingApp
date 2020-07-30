@@ -1,184 +1,15 @@
-const gridElement = document.getElementsByClassName('day-grid')[0];
-const month_element = document.getElementsByClassName("month")[0];
-const driverSelect = document.getElementsByClassName('drivers')[0];
-const todayButton = document.getElementsByClassName('todayBtn')[0];
-const next_week_element = document.getElementById("nextWeek");
-const prev_week_element = document.getElementById("prevWeek");
-const taskForm = document.getElementsByClassName('task-container')[0];
-const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const weekDayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const monthDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 let firstDayOfWeek;
 let selectedTask;
-const numMilliSecondsInDay = 24*60*60*1000;
-const drivers = [
-    {   name: "Kali",
-        id: 0,
-        tasks: [
-            {
-                id: 0,
-                startDateTime: new Date('2020-07-28T06:00:00'),
-                duration: 2,
-                location: 'toronto',
-                type: 'Pickup',
-                description: "Pick up for sheridian nurseries"
-            },
-            {
-                id: 1,
-                startDateTime: new Date('2020-07-30T15:00:00'),
-                duration: 3,
-                location: 'markham',
-                type: 'Dropoff',
-                description: 'Store is located on the east side, be on the look out!'
-            }
-        ]
-    },
-    {
-        name: "Karisma",
-        id: 1,
-        tasks: [
-            {
-                id: 0,
-                startDateTime: new Date('2020-07-26T06:00:00'),
-                duration: 1,
-                location: 'toronto',
-                type: 'Pickup',
-                description: 'mean staff beware'
-            },
-            {
-                id: 1,
-                startDateTime: new Date('2020-08-01T15:00:00'),
-                duration: 2,
-                location: 'markham',
-                type: 'Other',
-                description: 'fragile delivery contents, take it easy on the roads'
-            }
+let drivers = [];
+let currentDriver; 
 
-        ]
-    },
-    {
-        name: "Matthew",
-        id: 2,
-        tasks: [
-            {
-                id: 0,
-                startDateTime: new Date('2020-07-28T06:00:00'),
-                duration: 2,
-                location: 'toronto',
-                type: 'Other',
-                description: 'security before you enter'
-            },
-            {
-                id: 1,
-                startDateTime: new Date('2020-07-31T12:00:00'),
-                duration: 4,
-                location: 'markham',
-                type: 'Dropoff',
-                description: 'beware of guard dogs!'
-            }
-
-        ]
-    }
-     
-];
-let currentDriver = drivers[0];
-
-// add event listener to arrows so when they are clicked it changes the dates 
-next_week_element.addEventListener('click', changeWeek);
-prev_week_element.addEventListener('click', changeWeek);
-document.getElementById('downloadBtn').addEventListener('click', openDownloadForm);
-todayButton.addEventListener('click', toCurrentDate);
-driverSelect.addEventListener('change', setDriver);
-taskForm.addEventListener('submit', saveTask);
-document.getElementById('cancelBtn').addEventListener('click', closeForm);
-document.getElementById('deleteBtn').addEventListener('click', deleteButtonClick);
-document.getElementById('createFileBtn').addEventListener('click', createCsvFile);
-
-
-
-toCurrentDate();
+setEventListeners();
+loadDrivers();
 
 //Functions
 
-function openDownloadForm(e) {
-    document.getElementById("download-form").style.display = "block";
-}
-
-function closeDownloadForm(e) {
-    document.getElementById("download-form").style.display = "none";
-}
-
-function openForm(e) {
-    let selectedCell = e.target;
-    const startDateTime = new Date(parseInt(selectedCell.dataset.startDateTime))
-
-    if (selectedCell.dataset.taskId) {
-        selectedTask = currentDriver.tasks.find(task => task.id === parseInt(selectedCell.dataset.taskId))
-        document.getElementById("submitBtn").innerHTML = 'Edit';
-        document.getElementById('deleteBtn').classList.remove('hidden');
-
-    } else {
-        const newTask = 
-        {
-            id: null,
-            startDateTime: startDateTime,
-            duration: 1,
-            location: '',
-            type: 'Pickup',
-            description: ''
-        }
-        selectedTask = newTask
-        document.getElementById("submitBtn").innerHTML = 'Add';
-        document.getElementById('deleteBtn').classList.add('hidden');
-    }
-    document.getElementById('timeInterval').value = selectedTask.duration;
-    document.getElementById('location').value = selectedTask.location;
-    document.getElementById(selectedTask.type.toLowerCase()).checked = true;
-    document.getElementById('taskDescription').value = selectedTask.description;
-    document.getElementsByClassName('date-text')[0].innerHTML = startDateTime.toLocaleDateString();
-    document.getElementsByClassName('task-time')[0].innerHTML = startDateTime.toLocaleTimeString();
-    if (document.getElementsByClassName('selected-cell').length > 0) {
-        document.getElementsByClassName('selected-cell')[0].classList.remove('selected-cell');
-    }
-    selectedCell.classList.add('selected-cell');
-    document.getElementById("myForm").classList.remove('hidden');
-}
-
-function closeForm() {
-    if (document.getElementsByClassName('selected-cell')[0]){
-        document.getElementsByClassName('selected-cell')[0].classList.remove('selected-cell');
-    }
-    document.getElementById("myForm").classList.add('hidden');
-}
-
-function changeWeek(e) {
-    let arrowClass = (e.target.className).split(" ")[1];
-   
-    if (arrowClass == 'next-week') {
-        firstDayOfWeek = addDays(firstDayOfWeek, 7);
-    } else if (arrowClass == "prev-week") {
-        firstDayOfWeek = addDays(firstDayOfWeek, -7);
-    }else {
-        return -1;
-    }
-
-    firstDayOfWeek.setHours(0,0,0,0);
-    updatePage();
-}
-
-function addDays(date, days) {
-    let result = new Date(date);
-    result.setDate(result.getDate() + days);
-    return result;
-}
-
-function addHours(date, hours) {
-    let result = new Date(date);
-    result.setHours(result.getHours() + hours)
-    return result;
-}
-
 function populateGrid() {
+    const gridElement = document.getElementById('day-grid');
 
     while (gridElement.hasChildNodes()) {   
         gridElement.removeChild(gridElement.firstChild);
@@ -195,45 +26,118 @@ function populateGrid() {
         cell.innerHTML = i.toString().padStart(2,"0") + ":00";
         gridElement.appendChild(cell);
     }
+    createDayCells(gridElement);
+}
 
+function createDayCells(gridElement) {
+    const weekDayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     for (let day = 0; day < 7; day++) {
+        // Create the header for the column(i.e. the day) Ex. Sun 26
         const weekdayCell = document.createElement('div');
         weekdayCell.classList.add('date-cell');
         const weekday = addDays(firstDayOfWeek, day);
-        weekdayCell.innerHTML = `<div>${weekDayNames[weekday.getDay()]}</div><div>${weekday.getDate()}</div>`; 
+        weekdayCell.innerHTML = `<div>${weekDayNames[weekday.getDay()]}</div><div>${weekday.getDate()}</div>`;
         gridElement.appendChild(weekdayCell);
 
         const nextDay = addDays(weekday, 1);
         let tasksForDate = currentDriver.tasks.filter(task => {
             return task.startDateTime >= weekday && task.startDateTime < nextDay;
-        })
+        });
 
         for (let hour = 0; hour < 24; hour++) {
-            const task = tasksForDate.find( task => {
+            const task = tasksForDate.find(task => {
                 return task.startDateTime.getHours() === hour;
-            })
-            weekday.setHours(hour,0,0,0);
+            });
+            weekday.setHours(hour, 0, 0, 0);
             const cell = document.createElement('div');
-            cell.classList = "day-cell"; 
-            
+            cell.classList = "day-cell";
             if (task) {
                 if (task.type == 'Pickup') {
                     cell.classList.add('pickup-cell');
-                } else if (task.type == 'Dropoff') {
+                }
+                else if (task.type == 'Dropoff') {
                     cell.classList.add('dropoff-cell');
-                } else {
+                }
+                else {
                     cell.classList.add('other-cell');
                 }
-                cell.innerHTML= `<div class="cell-task-type">${task.type}</div><div class="cell-task-location">${task.location}</div><div class="cell-task-description">${task.description}</div>`;
+                cell.innerHTML = `<div class="cell-task-type">${task.type}</div><div class="cell-task-location">${task.location}</div><div class="cell-task-description">${task.description}</div>`;
                 cell.style = `grid-row: span ${task.duration}`;
-                hour+=task.duration -1;
+                hour += task.duration - 1;
                 cell.dataset.taskId = task.id;
-            }    
+            }
             cell.dataset.startDateTime = weekday.valueOf(); //cant pass a date object in html
-            cell.addEventListener('click', openForm);
+            cell.addEventListener('click', openTaskForm);
             gridElement.appendChild(cell);
         }
     }
+}
+
+function openDownloadForm(e) {
+    document.getElementById("download-form").classList.remove('hidden');
+}
+
+function closeDownloadForm(e) {
+    document.getElementById("download-form").classList.add('hidden');
+}
+
+function openTaskForm(e) {
+    let selectedCell = e.target;
+    const startDateTime = new Date(parseInt(selectedCell.dataset.startDateTime))
+
+    if (selectedCell.dataset.taskId) {
+        selectedTask = currentDriver.tasks.find(task => task.id === parseInt(selectedCell.dataset.taskId))
+        document.getElementById("submit-btn").innerHTML = 'Edit';
+        document.getElementById('delete-btn').classList.remove('hidden');
+    } else {
+        const newTask = 
+        {
+            id: null,
+            startDateTime: startDateTime,
+            duration: 1,
+            location: '',
+            type: 'Pickup',
+            description: ''
+        }
+        selectedTask = newTask
+        document.getElementById("submit-btn").innerHTML = 'Add';
+        document.getElementById('delete-btn').classList.add('hidden');
+    }
+    
+    populateTaskForm();
+    if (document.getElementsByClassName('selected-cell').length > 0) {
+        document.getElementsByClassName('selected-cell')[0].classList.remove('selected-cell');
+    }
+    selectedCell.classList.add('selected-cell');
+    document.getElementById("popup-task-form").classList.remove('hidden');
+}
+
+function populateTaskForm() {
+    document.getElementById('timeInterval').value = selectedTask.duration;
+    document.getElementById('location').value = selectedTask.location;
+    document.getElementById(selectedTask.type.toLowerCase()).checked = true;
+    document.getElementById('taskDescription').value = selectedTask.description;
+    document.getElementById('date-text').innerHTML = selectedTask.startDateTime.toLocaleDateString();
+    document.getElementById('task-time').innerHTML = selectedTask.startDateTime.toLocaleTimeString();
+}
+
+function closeTaskForm() {
+    if (document.getElementsByClassName('selected-cell')[0]){
+        document.getElementsByClassName('selected-cell')[0].classList.remove('selected-cell');
+    }
+    document.getElementById("popup-task-form").classList.add('hidden');
+}
+
+function changeWeek(e) {
+    if (e.target.classList.contains('next-week')) {
+        firstDayOfWeek = addDays(firstDayOfWeek, 7);
+    } else if (e.target.classList.contains('prev-week')) {
+        firstDayOfWeek = addDays(firstDayOfWeek, -7);
+    } else {
+        return;
+    }
+    firstDayOfWeek.setHours(0,0,0,0);
+    updatePage();
 }
 
 function saveTask(e) {
@@ -272,7 +176,7 @@ function saveTask(e) {
         currentDriver.tasks.push(selectedTask);
     } 
 
-    closeForm()
+    closeTaskForm()
     updatePage();
     return false;
 
@@ -289,12 +193,12 @@ function deleteTask(taskId) {
 }
 
 function updateMonthDate() {
-
+    const month_element = document.getElementById('month');
     const lastDayOfWeek = addDays(firstDayOfWeek, 6);
     if (lastDayOfWeek.getMonth() != firstDayOfWeek.getMonth()) {
-        month_element.innerHTML = months[firstDayOfWeek.getMonth()] + ' ' + firstDayOfWeek.getFullYear() + " - " + months[lastDayOfWeek.getMonth()] + ' ' + lastDayOfWeek.getFullYear();
+        month_element.innerHTML = getMonthShortName(firstDayOfWeek) + ' ' + firstDayOfWeek.getFullYear() + " - " + getMonthShortName(lastDayOfWeek) + ' ' + lastDayOfWeek.getFullYear();
     }else{
-        month_element.innerHTML = months[firstDayOfWeek.getMonth()] + ' ' + firstDayOfWeek.getFullYear()
+        month_element.innerHTML = getMonthShortName(firstDayOfWeek) + ' ' + firstDayOfWeek.getFullYear()
     }
 }
 
@@ -305,6 +209,7 @@ function updatePage() {
 
 function toCurrentDate() {
     let currentDate = new Date();
+    const numMilliSecondsInDay = 24*60*60*1000;
     firstDayOfWeek = new Date(currentDate.valueOf() - (currentDate.getDay()*numMilliSecondsInDay)); 
     firstDayOfWeek.setHours(0,0,0,0);
     updatePage();
@@ -386,7 +291,7 @@ function createCsvFile () {
                }
             }
         }
-        csvText = csvText + `\n${months[currentDate.getMonth()]} ${currentDate.getDate()} - ${months[intervalEndDate.getMonth()]} ${intervalEndDate.getDate()},${pickup},${dropoff},${other}`;
+        csvText = csvText + `\n${getMonthShortName(currentDate)} ${currentDate.getDate()} - ${getMonthShortName(intervalEndDate)} ${intervalEndDate.getDate()},${pickup},${dropoff},${other}`;
         currentDate = addDays(currentDate, days);
     }
 
@@ -403,6 +308,115 @@ function download(filename, text) {
     element.click();
     document.body.removeChild(element);
 }
+// Functions
+
+function loadDrivers() {
+   drivers =  [
+       { 
+           name: "Kali",
+           id: 0,
+           tasks: [
+               {
+                    id: 0,
+                    startDateTime: new Date('2020-07-28T06:00:00'),
+                    duration: 2,
+                    location: 'toronto',
+                    type: 'Pickup',
+                    description: "Pick up for sheridian nurseries"
+                },
+                {
+                    id: 1,
+                    startDateTime: new Date('2020-07-30T15:00:00'),
+                    duration: 3,
+                    location: 'markham',
+                    type: 'Dropoff',
+                    description: 'Store is located on the east side, be on the look out!'
+                },
+            ]
+        },
+        {
+            name: "Karisma",
+            id: 1,
+            tasks: [
+                {
+                    id: 0,
+                    startDateTime: new Date('2020-07-26T06:00:00'),
+                    duration: 1,
+                    location: 'toronto',
+                    type: 'Pickup',
+                    description: 'mean staff beware'
+                },
+                {
+                    id: 1,
+                    startDateTime: new Date('2020-08-01T15:00:00'),
+                    duration: 2,
+                    location: 'markham',
+                    type: 'Other',
+                    description: 'fragile delivery contents, take it easy on the roads'
+                }
+
+            ]
+         },
+         {
+            name: "Matthew",
+            id: 2,
+            tasks: [
+                {
+                    id: 0,
+                    startDateTime: new Date('2020-07-28T06:00:00'),
+                    duration: 2,
+                    location: 'toronto',
+                    type: 'Other',
+                    description: 'security before you enter'
+                },
+                {
+                    id: 1,
+                    startDateTime: new Date('2020-07-31T12:00:00'),
+                    duration: 4,
+                    location: 'markham',
+                    type: 'Dropoff',
+                    description: 'beware of guard dogs!'
+                }
+            ]
+        } 
+    ];
+    currentDriver = drivers[0];
+    toCurrentDate();
+}
+
+// Event Handler Functions
+function setEventListeners() {
+    document.getElementById("next-week").addEventListener('click', changeWeek);
+    document.getElementById("prev-week").addEventListener('click', changeWeek);
+    document.getElementById('download-btn').addEventListener('click', openDownloadForm);
+    document.getElementById('today-btn').addEventListener('click', toCurrentDate);
+    document.getElementById('drivers').addEventListener('change', setDriver);
+    document.getElementById('task-container').addEventListener('submit', saveTask);
+    document.getElementById('cancel-btn').addEventListener('click', closeTaskForm);
+    document.getElementById('download-close-btn').addEventListener('click', closeDownloadForm)
+    document.getElementById('delete-btn').addEventListener('click', deleteButtonClick);
+    document.getElementById('create-file-btn').addEventListener('click', createCsvFile);
+}
+
+// Helper Functions
+
+function getMonthShortName(date) {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return months[date.getMonth()];
+}
+
+function addDays(date, days) {
+    const result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+}
+
+function addHours(date, hours) {
+    const result = new Date(date);
+    result.setHours(result.getHours() + hours)
+    return result;
+}
+
 
 
 
