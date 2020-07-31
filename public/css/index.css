@@ -63,10 +63,15 @@ header {
 
 .form-popup {
   position: fixed;
-  top: 0;
+  top: 100%;
   left: 0;
   width: 100%;
   height: 100%;
+  transition: all 0.4s;
+}
+
+.form-popup-show {
+  top: 0%;
 }
 
 .download-container {
@@ -81,7 +86,6 @@ header {
   width: 450px;
   height: 330px;
   padding: 10px;
-
 }
 
 .task-container{
@@ -93,8 +97,8 @@ header {
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 9;
-  width: 400px;
-  height: 500px;
+  width: 375px;
+  height: 480px;
   padding: 10px;
 }
 
@@ -155,7 +159,7 @@ header {
 }
 
 .selected-cell {
-  background-color: lavender;
+  background-color: lightgrey;
 }
 
 .hidden {
@@ -163,7 +167,7 @@ header {
 }
 
 .pickup-cell {
-  background-color: lavender;
+  background-color: lightpink;
 }
 
 .dropoff-cell {
@@ -179,20 +183,20 @@ header {
 }
 
 .cell-task-description {
-  font-size: 10px;
+  font-size: 12px;
   padding-top: 5px;
   font-weight: 300;
   pointer-events: none;
 }
 
 .cell-task-type {
-  font-size: 12px;
+  font-size: 18px;
   font-weight: bolder;
   pointer-events: none;
 }
 
 .cell-task-location {
-  font-size: 11px;
+  font-size: 15px;
   pointer-events: none;
   font-style: italic; 
 }
@@ -204,6 +208,8 @@ header {
 .form-label{
   display: block;
   font-weight: bold;
+  margin-top: 20px;
+  margin-bottom: 3px;
 }
 
 .driver-report-grid-container{

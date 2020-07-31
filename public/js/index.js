@@ -82,14 +82,14 @@ function createDayCells(gridElement) {
 }
 
 function openDownloadForm(e) {
-    document.getElementById('download-form').classList.remove('hidden');
+    document.getElementById('download-form').classList.add('form-popup-show');
     document.getElementById('report-header').innerHTML = `${currentDriver.name}'s Report`;
     populateReport();
 }
 
 
 function closeDownloadForm(e) {
-    document.getElementById('download-form').classList.add('hidden');
+    document.getElementById('download-form').classList.remove('form-popup-show');
 }
 
 function populateReport() {
@@ -140,7 +140,7 @@ function openTaskForm(e) {
         document.getElementsByClassName('selected-cell')[0].classList.remove('selected-cell');
     }
     selectedCell.classList.add('selected-cell');
-    document.getElementById('popup-task-form').classList.remove('hidden');
+    document.getElementById('popup-task-form').classList.add('form-popup-show');
 }
 
 function populateTaskForm() {
@@ -148,15 +148,14 @@ function populateTaskForm() {
     document.getElementById('location').value = selectedTask.location;
     document.getElementById(selectedTask.type.toLowerCase()).checked = true;
     document.getElementById('task-description').value = selectedTask.description;
-    document.getElementById('date-text').innerHTML = selectedTask.startDateTime.toLocaleDateString();
-    document.getElementById('task-time').innerHTML = selectedTask.startDateTime.toLocaleTimeString();
+    document.getElementById('date-text').innerHTML = selectedTask.startDateTime.toLocaleString();
 }
 
 function closeTaskForm() {
     if (document.getElementsByClassName('selected-cell')[0]){
         document.getElementsByClassName('selected-cell')[0].classList.remove('selected-cell');
     }
-    document.getElementById('popup-task-form').classList.add('hidden');
+    document.getElementById('popup-task-form').classList.remove('form-popup-show');
 }
 
 function dismissTaskForm(e) {
@@ -399,18 +398,42 @@ function loadDrivers() {
                     id: 0,
                     startDateTime: new Date('2020-07-28T06:00:00'),
                     duration: 2,
-                    location: 'toronto',
+                    location: 'Toronto',
                     type: 'Pickup',
                     description: 'Pick up for sheridian nurseries'
                 },
                 {
                     id: 1,
-                    startDateTime: new Date('2020-07-30T15:00:00'),
-                    duration: 3,
-                    location: 'markham',
+                    startDateTime: new Date('2020-07-30T09:00:00'),
+                    duration: 4,
+                    location: 'Markham',
                     type: 'Dropoff',
                     description: 'Store is located on the east side, be on the look out!'
                 },
+                {
+                    id: 2,
+                    startDateTime: new Date('2020-08-05T16:00:00'),
+                    duration: 4,
+                    location: 'Vaughan',
+                    type: 'Dropoff',
+                    description: 'Store is located on the east side, be on the look out!'
+                },
+                {
+                    id: 3,
+                    startDateTime: new Date('2020-07-31T00:00:00'),
+                    duration: 2,
+                    location: 'Richmond Hill',
+                    type: 'Other',
+                    description: 'Store is located on the east side, be on the look out!'
+                },
+                {
+                    id: 4,
+                    startDateTime: new Date('2020-07-27T03:00:00'),
+                    duration: 2,
+                    location: 'Richmond Hill',
+                    type: 'Pickup',
+                    description: 'Deliver 8 crates of crab to fisheries'
+                }
             ]
         },
         {
