@@ -34,10 +34,17 @@ function createDayCells(gridElement) {
     const weekDayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     for (let day = 0; day < 7; day++) {
         // Create the header for the column(i.e. the day) Ex. Sun 26
+        dayNumberClass = 'day-number';
         const weekdayCell = document.createElement('div');
         weekdayCell.classList.add('date-cell');
         const weekday = addDays(firstDayOfWeek, day);
-        weekdayCell.innerHTML = `<div>${weekDayNames[weekday.getDay()]}</div><div>${weekday.getDate()}</div>`;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        console.log('weekday:',weekday,'today:',today);
+        if (weekday.getTime() === today.getTime()) {
+            dayNumberClass = 'day-number today';
+        }
+        weekdayCell.innerHTML = `<div>${weekDayNames[weekday.getDay()]}</div><div class='${dayNumberClass}'><div>${weekday.getDate()}</div></div>`;
         gridElement.appendChild(weekdayCell);
 
         const nextDay = addDays(weekday, 1);

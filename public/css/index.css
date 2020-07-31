@@ -224,3 +224,16 @@ header {
   border: 1px solid var(--grid-border-color);
 }
 
+.day-number {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 28px;
+  border-radius: 50%;
+}
+
+.today {
+  background-color: rgba(30, 57, 143, 0.3);
+}
+
