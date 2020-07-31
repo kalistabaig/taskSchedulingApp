@@ -1,7 +1,7 @@
 const express = require('express')
 const mustacheExpress = require('mustache-express')
 const app = express()
-const port = 3000
+const port = 3500
 
 app.use(express.static('public'))
 app.engine('mustache', mustacheExpress()) //setting view engine mustace
@@ -13,4 +13,4 @@ app.get('/', (req, res) => {
     res.render('index.mustache');
 })
 
-app.listen(port, () => console.log('Example app listening at port 3000'))
+app.listen(port, () => console.log(`Example app listening at port ${port}`))

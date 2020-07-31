@@ -18,7 +18,7 @@ Installation steps:
  ```
  node app.js
  ```
-4. View the app in your browser at [http://localhost:3000](http://localhost:3000)
+4. View the app in your browser at [http://localhost:3500](http://localhost:3500)
 
 
 

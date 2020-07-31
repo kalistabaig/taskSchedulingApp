@@ -396,7 +396,7 @@ function loadDrivers() {
            tasks: [
                {
                     id: 0,
-                    startDateTime: new Date('2020-07-28T06:00:00'),
+                    startDateTime: new Date('2020-07-28T06:00:00Z'),
                     duration: 2,
                     location: 'Toronto',
                     type: 'Pickup',
@@ -404,7 +404,7 @@ function loadDrivers() {
                 },
                 {
                     id: 1,
-                    startDateTime: new Date('2020-07-30T09:00:00'),
+                    startDateTime: new Date('2020-07-30T09:00:00Z'),
                     duration: 4,
                     location: 'Markham',
                     type: 'Dropoff',
@@ -412,7 +412,7 @@ function loadDrivers() {
                 },
                 {
                     id: 2,
-                    startDateTime: new Date('2020-08-05T16:00:00'),
+                    startDateTime: new Date('2020-08-05T16:00:00Z'),
                     duration: 4,
                     location: 'Vaughan',
                     type: 'Dropoff',
@@ -420,19 +420,11 @@ function loadDrivers() {
                 },
                 {
                     id: 3,
-                    startDateTime: new Date('2020-07-31T00:00:00'),
+                    startDateTime: new Date('2020-07-31T00:00:00Z'),
                     duration: 2,
                     location: 'Richmond Hill',
                     type: 'Other',
                     description: 'Store is located on the east side, be on the look out!'
-                },
-                {
-                    id: 4,
-                    startDateTime: new Date('2020-07-27T03:00:00'),
-                    duration: 2,
-                    location: 'Richmond Hill',
-                    type: 'Pickup',
-                    description: 'Deliver 8 crates of crab to fisheries'
                 }
             ]
         },
@@ -442,7 +434,7 @@ function loadDrivers() {
             tasks: [
                 {
                     id: 0,
-                    startDateTime: new Date('2020-07-26T06:00:00'),
+                    startDateTime: new Date('2020-07-26T06:00:00Z'),
                     duration: 1,
                     location: 'toronto',
                     type: 'Pickup',
@@ -450,7 +442,7 @@ function loadDrivers() {
                 },
                 {
                     id: 1,
-                    startDateTime: new Date('2020-08-01T15:00:00'),
+                    startDateTime: new Date('2020-08-01T15:00:00Z'),
                     duration: 2,
                     location: 'markham',
                     type: 'Other',
@@ -465,7 +457,7 @@ function loadDrivers() {
             tasks: [
                 {
                     id: 0,
-                    startDateTime: new Date('2020-07-28T06:00:00'),
+                    startDateTime: new Date('2020-07-28T06:00:00Z'),
                     duration: 2,
                     location: 'toronto',
                     type: 'Other',
@@ -473,7 +465,7 @@ function loadDrivers() {
                 },
                 {
                     id: 1,
-                    startDateTime: new Date('2020-07-31T12:00:00'),
+                    startDateTime: new Date('2020-07-31T12:00:00Z'),
                     duration: 4,
                     location: 'markham',
                     type: 'Dropoff',
