@@ -88,7 +88,21 @@ header {
   padding: 10px;
 }
 
-.task-container{
+.task-container {
+  position: absolute;
+  background-color: white;
+  box-shadow: 0 0 10px #888888;
+  border-radius: 8px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9;
+  width: 375px;
+  height: 480px;
+  padding: 10px;
+}
+
+.conflict-container {
   position: absolute;
   background-color: white;
   box-shadow: 0 0 10px #888888;

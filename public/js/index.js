@@ -40,7 +40,6 @@ function createDayCells(gridElement) {
         const weekday = addDays(firstDayOfWeek, day);
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        console.log('weekday:',weekday,'today:',today);
         if (weekday.getTime() === today.getTime()) {
             dayNumberClass = 'day-number today';
         }
@@ -81,15 +80,23 @@ function createDayCells(gridElement) {
     }
 }
 
-function openDownloadForm(e) {
+function openDownloadForm() {
     document.getElementById('download-form').classList.add('form-popup-show');
     document.getElementById('report-header').innerHTML = `${currentDriver.name}'s Report`;
     populateReport();
 }
 
 
-function closeDownloadForm(e) {
+function closeDownloadForm() {
     document.getElementById('download-form').classList.remove('form-popup-show');
+}
+
+function openConflictPopup() {
+    document.getElementById('conflict-popup').classList.add('form-popup-show');
+}
+
+function closeConflictPopup() {
+    document.getElementById('conflict-popup').classList.remove('form-popup-show');
 }
 
 function populateReport() {
@@ -182,32 +189,27 @@ function changeWeek(e) {
     updatePage();
 }
 
-function saveTask(e) {
+function handleTaskSubmit(e) {
     e.preventDefault();
     let taskCopy = {...selectedTask}; //spread operator to clone an object
     taskCopy.duration =  parseInt(document.getElementById('time-interval').value);
     taskCopy.location =  document.getElementById('location').value;
     taskCopy.type =  document.querySelector('input[name="taskOption"]:checked').value;
     taskCopy.description = document.getElementById('task-description').value;
-    
-    if (!checkTask(taskCopy)) {
-        return;
+    handleTask(taskCopy);
+}
 
-    }
-
- 
-
+function saveTask(taskCopy) {
+    selectedTask.startDateTime =taskCopy.startDateTime;
     selectedTask.duration = taskCopy.duration;
-    selectedTask.location =  taskCopy.location;
-    selectedTask.type =  taskCopy.type;
+    selectedTask.location = taskCopy.location;
+    selectedTask.type = taskCopy.type;
     selectedTask.description = taskCopy.description;
 
     if (selectedTask.id == null) {
         selectedTask.id = getNewId();
         currentDriver.tasks.push(selectedTask);
-    } 
-
-    closeTaskForm()
+    }
     updatePage();
 }
 
@@ -260,7 +262,7 @@ function getNewId() {
     let newId = biggestId + 1;
     return newId;
 }
-function checkTask(task) {
+function handleTask(task) {
     // Checks if the task will not extend across multiple days
     const newTaskEndDateTime = addHours(task.startDateTime, task.duration);
     const maxValidTaskEndDateTime = addDays(task.startDateTime, 1);
@@ -268,29 +270,53 @@ function checkTask(task) {
     if ( newTaskEndDateTime > maxValidTaskEndDateTime) {
         const overTime = newTaskEndDateTime.getHours();
          alert(`Your task extends across multiple days by ${overTime} hours. Reschedule for an earlier time or reduce the duration of the task`);
-         return false;
+         return;
     }
 
     // Checks for conflicting tasks and allows the user to delete them 
     const conflictingTasks = checkConflictingTasks(task);
     if (conflictingTasks.length > 0) {
+        openConflictPopup();
+        const conflictingTasksList = document.getElementById('conflicting-tasks-list');
         const taskStrings = conflictingTasks.map(task => `${task.type} ${task.startDateTime.toLocaleString()}`);
-        const taskString = taskStrings.join('\n');
+        taskStrings.forEach(taskString => {
+           let conflictingTaskItem =  document.createElement('li');
+           conflictingTaskItem.innerHTML = taskString;
+           conflictingTasksList.appendChild(conflictingTaskItem);
+        });
+       
         const nextAvailableDateTime = getNextAvailableDateTime(task);
-        let message;
         if(nextAvailableDateTime) {
-            message = `You have the following conflicting tasks:\n\n${taskString}\n\nThe next available time slot is: ${nextAvailableDateTime.toLocaleString()}.\nWould you like to delete the tasks?`;
+            document.getElementById('use-suggested-task-time-btn').classList.remove('hidden');
+            document.getElementById('suggested-task-time-string').innerHTML = nextAvailableDateTime.toLocaleString();
         } else {
-            message = `You have the following conflicting tasks:\n\n${taskString}\n\nThere are no available time slots within the week.\nWould you like to delete the tasks?`
+            document.getElementById('use-suggested-task-time-btn').classList.add('hidden');
+            document.getElementById('suggested-task-time-string').innerHTML = 'There are no available time slots within the week.';
         }
-        const deleteTasks = confirm(message);
-        if (deleteTasks) {
+
+        document.getElementById('delete-existing-tasks-btn').onclick = () => {
             conflictingTasks.forEach(task => deleteTask(task.id));
-        } else {
-            return false; 
+            saveTask(task);
+            closeConflictPopup();
+            closeTaskForm();
         }
+
+        document.getElementById('use-suggested-task-time-btn').onclick = () => {
+            console.log("before:",task);
+            task.startDateTime = nextAvailableDateTime;
+            console.log("after:",task);
+            saveTask(task);
+            closeConflictPopup();
+            closeTaskForm();
+        }   
+        
+        document.getElementById('cancel-conflict-btn').onclick = () => {
+            closeConflictPopup();
+        }
+    } else {
+        saveTask(task);
+        closeTaskForm();
     }
-    return true;
 }
 
 function checkConflictingTasks(task) {
@@ -425,6 +451,14 @@ function loadDrivers() {
                     location: 'Richmond Hill',
                     type: 'Other',
                     description: 'Store is located on the east side, be on the look out!'
+                },
+                {
+                    id: 4,
+                    startDateTime: new Date('2020-08-08T17:00:00Z'),
+                    duration: 2,
+                    location: 'Markham',
+                    type: 'Other',
+                    description: 'Store is located on the east side, be on the look out!'
                 }
             ]
         },
@@ -485,7 +519,7 @@ function setEventListeners() {
     document.getElementById('download-btn').addEventListener('click', openDownloadForm);
     document.getElementById('today-btn').addEventListener('click', displayCurrentDate);
     document.getElementById('drivers').addEventListener('change', setDriver);
-    document.getElementById('task-container').addEventListener('submit', saveTask);
+    document.getElementById('task-container').addEventListener('submit', handleTaskSubmit);
     document.getElementById('cancel-btn').addEventListener('click', closeTaskForm);
     document.getElementById('download-close-btn').addEventListener('click', closeDownloadForm)
     document.getElementById('delete-btn').addEventListener('click', deleteButtonClick);
