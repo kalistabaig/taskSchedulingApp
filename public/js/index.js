@@ -148,6 +148,7 @@ function openTaskForm(e) {
     }
     selectedCell.classList.add('selected-cell');
     document.getElementById('popup-task-form').classList.add('form-popup-show');
+    document.getElementById('task-container').classList.add('popup-container-show');
 }
 
 function populateTaskForm() {
@@ -163,6 +164,7 @@ function closeTaskForm() {
         document.getElementsByClassName('selected-cell')[0].classList.remove('selected-cell');
     }
     document.getElementById('popup-task-form').classList.remove('form-popup-show');
+    document.getElementById('task-container').classList.remove('popup-container-show');
 }
 
 function dismissTaskForm(e) {
