@@ -1,11 +1,10 @@
 let firstDayOfWeek;
 let selectedTask;
-let drivers = [];
-let currentDriver; 
+let currentDriver;
 let reportCsvString;
 
 setEventListeners();
-loadDrivers();
+loadDriver(document.getElementById('drivers').value);
 
 //Functions
 
@@ -201,28 +200,19 @@ function handleTaskSubmit(e) {
     handleTask(taskCopy);
 }
 
-function saveTask(taskCopy) {
-    selectedTask.startDateTime =taskCopy.startDateTime;
-    selectedTask.duration = taskCopy.duration;
-    selectedTask.location = taskCopy.location;
-    selectedTask.type = taskCopy.type;
-    selectedTask.description = taskCopy.description;
-
-    if (selectedTask.id == null) {
-        selectedTask.id = getNewId();
-        currentDriver.tasks.push(selectedTask);
-    }
-    updatePage();
-}
-
 function deleteButtonClick() {
     deleteTask(selectedTask.id);
-    updatePage();
+    
 }
 
 function deleteTask(taskId) {
-    const taskIndex = currentDriver.tasks.findIndex(task => task.id === taskId);
-    currentDriver.tasks.splice(taskIndex, 1);
+    fetch(`/api/drivers/${currentDriver.id}/tasks/${taskId}`, {method: 'DELETE'})
+        .then(() => {
+            const taskIndex = currentDriver.tasks.findIndex(task => task.id === taskId);
+            currentDriver.tasks.splice(taskIndex, 1);
+            closeTaskForm();
+            updatePage();
+        })
 }
 
 function updateMonthDate() {
@@ -248,22 +238,11 @@ function displayCurrentDate() {
     updatePage();
 }
 
-function setDriver(e) {
-    currentDriver = drivers[parseInt(e.target.value)];
-    updatePage();
+function handleDriverChange(e) {
+    currentDriverId =  parseInt(e.target.value);
+    loadDriver(currentDriverId);
 }
 
-function getNewId() {
-    let i;
-    let biggestId = 0;
-    for (i = 0; i < currentDriver.tasks.length; i++) {
-        if (currentDriver.tasks[i].id > biggestId) {
-            biggestId = currentDriver.tasks[i].id;
-        }
-    }
-    let newId = biggestId + 1;
-    return newId;
-}
 function handleTask(task) {
     // Checks if the task will not extend across multiple days
     const newTaskEndDateTime = addHours(task.startDateTime, task.duration);
@@ -379,6 +358,30 @@ function getNextAvailableDateTimeForDay(day, duration) {
 }
 
 
+function saveTask(taskCopy) {
+    selectedTask.startDateTime =taskCopy.startDateTime;
+    selectedTask.duration = taskCopy.duration;
+    selectedTask.location = taskCopy.location;
+    selectedTask.type = taskCopy.type;
+    selectedTask.description = taskCopy.description;
+    const options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(selectedTask)
+    };
+
+    fetch(`/api/drivers/${currentDriver.id}/tasks`, options)
+        .then(response => response.json())
+        .then(data => {
+            selectedTask = data;
+            selectedTask.startDateTime = new Date(selectedTask.startDateTime);
+            currentDriver.tasks.push(selectedTask)
+            updatePage();
+        })
+}
+
 function createCsvFile() {
     download('DriverTaskReport.csv', reportCsvString);
 }
@@ -416,102 +419,16 @@ function createCsvString() {
 
 // Functions
 
-function loadDrivers() {
-   drivers =  [
-       { 
-           name: 'Kalista',
-           id: 0,
-           tasks: [
-               {
-                    id: 0,
-                    startDateTime: new Date('2020-07-28T06:00:00Z'),
-                    duration: 2,
-                    location: 'Toronto',
-                    type: 'Pickup',
-                    description: 'Pick up for sheridian nurseries'
-                },
-                {
-                    id: 1,
-                    startDateTime: new Date('2020-07-30T09:00:00Z'),
-                    duration: 4,
-                    location: 'Markham',
-                    type: 'Dropoff',
-                    description: 'Store is located on the east side, be on the look out!'
-                },
-                {
-                    id: 2,
-                    startDateTime: new Date('2020-08-05T16:00:00Z'),
-                    duration: 4,
-                    location: 'Vaughan',
-                    type: 'Dropoff',
-                    description: 'Store is located on the east side, be on the look out!'
-                },
-                {
-                    id: 3,
-                    startDateTime: new Date('2020-07-31T00:00:00Z'),
-                    duration: 2,
-                    location: 'Richmond Hill',
-                    type: 'Other',
-                    description: 'Store is located on the east side, be on the look out!'
-                },
-                {
-                    id: 4,
-                    startDateTime: new Date('2020-08-08T17:00:00Z'),
-                    duration: 2,
-                    location: 'Markham',
-                    type: 'Other',
-                    description: 'Store is located on the east side, be on the look out!'
-                }
-            ]
-        },
-        {
-            name: 'Karisma',
-            id: 1,
-            tasks: [
-                {
-                    id: 0,
-                    startDateTime: new Date('2020-07-26T06:00:00Z'),
-                    duration: 1,
-                    location: 'toronto',
-                    type: 'Pickup',
-                    description: 'mean staff beware'
-                },
-                {
-                    id: 1,
-                    startDateTime: new Date('2020-08-01T15:00:00Z'),
-                    duration: 2,
-                    location: 'markham',
-                    type: 'Other',
-                    description: 'fragile delivery contents, take it easy on the roads'
-                }
-
-            ]
-         },
-         {
-            name: 'Matthew',
-            id: 2,
-            tasks: [
-                {
-                    id: 0,
-                    startDateTime: new Date('2020-07-28T06:00:00Z'),
-                    duration: 2,
-                    location: 'toronto',
-                    type: 'Other',
-                    description: 'security before you enter'
-                },
-                {
-                    id: 1,
-                    startDateTime: new Date('2020-07-31T12:00:00Z'),
-                    duration: 4,
-                    location: 'markham',
-                    type: 'Dropoff',
-                    description: 'beware of guard dogs!'
-                }
-            ]
-        } 
-    ];
-    currentDriver = drivers[0];
-    displayCurrentDate();
+function loadDriver(id) {
+    fetch(`/api/drivers/${id}`)
+        .then(response => response.json())
+        .then(data => {
+            data.tasks.forEach(task => {
+                task.startDateTime = new Date(task.startDateTime);
+            });
+            currentDriver = data;
+            displayCurrentDate();
+        });
 }
 
 // Event Handler Functions
@@ -520,7 +437,7 @@ function setEventListeners() {
     document.getElementById('prev-week').addEventListener('click', changeWeek);
     document.getElementById('download-btn').addEventListener('click', openDownloadForm);
     document.getElementById('today-btn').addEventListener('click', displayCurrentDate);
-    document.getElementById('drivers').addEventListener('change', setDriver);
+    document.getElementById('drivers').addEventListener('change', handleDriverChange);
     document.getElementById('task-container').addEventListener('submit', handleTaskSubmit);
     document.getElementById('cancel-btn').addEventListener('click', closeTaskForm);
     document.getElementById('download-close-btn').addEventListener('click', closeDownloadForm)
