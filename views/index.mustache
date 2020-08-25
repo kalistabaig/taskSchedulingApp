@@ -11,9 +11,9 @@
       <div class="driver-selection">
         <label for="drivers">Driver:</label>
         <select name="drivers" id="drivers">
-            <option name="driver" value="0" >Kalista</option>
-            <option name="driver" value="1" >Karisma</option>
-            <option name="driver" value="2">Matthew</option>
+            {{#drivers}}
+            <option value="{{id}}" >{{name}}</option>
+            {{/drivers}}
         </select>
       </div>
       <header>
@@ -30,6 +30,7 @@
     </div>
     {{>downloadForm}}
     {{>popupForm}}
+    {{>conflictPopup}}
     <script src="/js/index.js"></script>
 </body>
 </html>

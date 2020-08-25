@@ -67,11 +67,13 @@ header {
   left: 0;
   width: 100%;
   height: 100%;
-  transition: all 0.4s;
+  background-color: rgba(211, 211, 211, 0);
+  transition: background-color 0.4s;
 }
 
 .form-popup-show {
   top: 0%;
+  background-color: rgba(211, 211, 211, 0.6);
 }
 
 .download-container {
@@ -84,11 +86,31 @@ header {
   transform: translate(-50%, -50%);
   z-index: 9;
   width: 450px;
-  height: 330px;
+  height: 360px;
   padding: 10px;
 }
 
-.task-container{
+.task-container {
+  position: absolute;
+  background-color: white;
+  box-shadow: 0 0 10px #888888;
+  border-radius: 8px;
+  top: 100%;
+  left: 50%;
+  transform: translate(-50%);
+  z-index: 9;
+  width: 375px;
+  height: 480px;
+  padding: 10px;
+  transition: all 0.4s;
+}
+
+.popup-container-show {
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.conflict-container {
   position: absolute;
   background-color: white;
   box-shadow: 0 0 10px #888888;
@@ -97,36 +119,34 @@ header {
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 9;
-  width: 375px;
-  height: 480px;
+  width: 440px;
   padding: 10px;
 }
 
-.task-container .submit-btn {
+.primary-btn {
   background-color: #4CAF50;
   color: white;
   padding: 16px 20px;
   border: none;
   cursor: pointer;
-  width: 100px;
+  min-width: 100px;
   margin-bottom:10px;
   margin-top: 10px;
   opacity: 0.8;
 }
 
-#delete-btn {
+.delete-button {
   background-color: red;
   color: white;
   padding: 16px 20px;
   border: none;
   cursor: pointer;
-  width: 100px;
+  min-width: 100px;
   margin-bottom:10px;
   margin-top: 10px;
-  opacity: 0.8;
 }
 
-.task-container .cancel {
+.cancel-button {
   background-color: black;
   color: white;
   padding: 16px 20px;
