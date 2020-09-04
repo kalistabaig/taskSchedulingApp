@@ -5,7 +5,7 @@ let connection;
 //functions
 
 function openChatConnection() {
-    connection = new WebSocket(`ws://localhost:8080/?username=${window.taskApp.username}`);
+    connection = new WebSocket(`ws://localhost:8080/`);
     connection.onopen = () => {
         console.log('connected');
     };
@@ -18,19 +18,24 @@ function openChatConnection() {
         console.error('failed to connect', error);
     };
     
-    connection.onmessage = (event) => {
-        const data= JSON.parse(event.data);
-        console.log('received', data);
-        let messageDiv = document.createElement('div');
-        if (data.sender === window.taskApp.username) {
-            messageDiv.classList.add('self-message-bubble');
+    connection.onmessage = (event) => {  
+        
+        if (event.data === 'who dis??') {
+            connection.send('I B ' + window.taskApp.username);
         } else {
-            messageDiv.classList.add('other-message-bubble');
-            document.getElementById('receiving-audio').play();
+            const data = JSON.parse(event.data);
+            console.log('received', data);
+            let messageDiv = document.createElement('div');
+            if (data.sender === window.taskApp.username) {
+                messageDiv.classList.add('self-message-bubble');
+            } else {
+                messageDiv.classList.add('other-message-bubble');
+                document.getElementById('receiving-audio').play();
+            }
+            messageDiv.classList.add('message-bubble');
+            messageDiv.innerText = `${data.sender}: ${data.message}`;
+            document.getElementById('chat-box-msg-display').append(messageDiv);
         }
-        messageDiv.classList.add('message-bubble');
-        messageDiv.innerText = `${data.sender}: ${data.message}`;
-        document.getElementById('chat-box-msg-display').append(messageDiv);
     };
 }
 
