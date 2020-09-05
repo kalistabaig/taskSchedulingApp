@@ -332,12 +332,6 @@ header {
   background-color: lightyellow;
 }
 
-.chat-box-msg-display {
-  width: 100%;
-  height: calc(100% - 100px);
-  background-color: mediumaquamarine;
-}
-
 .chat-box-txt-area {
   display: flex;
   justify-content: flex-start;
@@ -362,21 +356,22 @@ header {
 
 /*Chat CSS*/
 
-.chat {
+.chat-box-msg-display {
   display: flex;
   flex-direction: column;
   border: 1px solid black;
-  width: 800px;
-  height: 200px;
+  width: 100%;
+  height: calc(100% - 100px);
   overflow: scroll;
+  background-color: mediumaquamarine;
 }
 
 .message-bubble {
-border-radius: 5px;
-max-width: 400px;
-padding: 5px;
-margin: 2px 5px;
-word-wrap: break-word;
+  border-radius: 5px;
+  max-width: 230px;
+  padding: 5px;
+  margin: 2px 5px;
+  word-wrap: break-word;
 }
 
 .self-message-bubble {
