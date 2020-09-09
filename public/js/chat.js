@@ -97,6 +97,7 @@ function displayMessage(message){
         messageDiv.classList.add('message-bubble');
         messageDiv.innerText = `${message.sender}: ${message.message}`;
         document.getElementById('chat-box-msg-display').append(messageDiv);
+        document.getElementById('chat-box-msg-display').scrollTop = document.getElementById('chat-box-msg-display').scrollHeight;
 }
 
 function toggleChat() {
