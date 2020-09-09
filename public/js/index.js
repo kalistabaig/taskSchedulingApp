@@ -10,12 +10,12 @@ if (window.location.href.search(/drivers\/\d+/) != -1) {
     loadDriverFromApi(driverId, (driver) => {
         window.taskApp.username = driver.name;
         console.log('username', window.taskApp.username);
-        openChatConnection();
+        setupChat(window.taskApp.username);
         loadDriver(driver);
     });
 } else {
     window.taskApp.username = 'Dispatcher';
-    openChatConnection();
+    setupChat(window.taskApp.username);
     loadDriverFromApi(document.getElementById('drivers').value, (driver) => {
         loadDriver(driver);
     });

@@ -1,6 +1,7 @@
-
-loadContacts();
 let connection;
+let username;
+let currentContact;
+let messagesDictionary = {};
 
 //functions
 
@@ -19,24 +20,26 @@ function openChatConnection() {
     };
     
     connection.onmessage = (event) => {  
-        
         if (event.data === 'who dis??') {
-            connection.send('I B ' + window.taskApp.username);
+            connection.send('I B ' + username);
         } else {
             const data = JSON.parse(event.data);
-            console.log('received', data);
-            let messageDiv = document.createElement('div');
-            if (data.sender === window.taskApp.username) {
-                messageDiv.classList.add('self-message-bubble');
+            if (data.sender === username) {
+                messagesDictionary[data.receipient].push({sender: data.sender, message: data.message});
             } else {
-                messageDiv.classList.add('other-message-bubble');
+                messagesDictionary[data.sender].push({sender: data.sender, message: data.message});
                 document.getElementById('receiving-audio').play();
             }
-            messageDiv.classList.add('message-bubble');
-            messageDiv.innerText = `${data.sender}: ${data.message}`;
-            document.getElementById('chat-box-msg-display').append(messageDiv);
+            if (data.receipient === currentContact || data.sender === currentContact){
+                displayMessage(data);
+            }
         }
     };
+}
+function setupChat(user) {
+    username = user;
+    loadContacts();
+    openChatConnection();
 }
 
 function loadContacts() {
@@ -46,7 +49,10 @@ function loadContacts() {
             const drivers = data;
             createContactDiv('Dispatcher');
             drivers.forEach(driver => {
-                createContactDiv(driver.name);
+                if (driver.name !== username){
+                    messagesDictionary[driver.name] = [];
+                    createContactDiv(driver.name);
+                }
            })
         });
 }
@@ -65,26 +71,44 @@ function handleContactDivClick(e) {
         document.getElementsByClassName('selected-contact')[0].classList.remove('selected-contact');
     }
     const recipient = e.target.innerHTML;
+    currentContact = recipient;
     e.target.classList.add('selected-contact');
-    const chatPanelHeader = document.getElementById('chat-box-header');
-    chatPanelHeader.innerHTML = `${recipient}`;
+    document.getElementById('chat-box-header').innerHTML = `${recipient}`;
+    removeChileNodes(document.getElementById('chat-box-msg-display'));
+    document.getElementById('chat-box-msg-display');
+    for (message of messagesDictionary[recipient]) {
+        displayMessage(message);
+    }
+}
 
+function removeChileNodes(element) {
+    while (element.hasChildNodes()) {   
+        element.removeChild(element.firstChild);
+    }
+}
+
+function displayMessage(message){
+    let messageDiv = document.createElement('div');
+        if (message.sender === username) {
+            messageDiv.classList.add('self-message-bubble');
+        } else {
+            messageDiv.classList.add('other-message-bubble');
+        }
+        messageDiv.classList.add('message-bubble');
+        messageDiv.innerText = `${message.sender}: ${message.message}`;
+        document.getElementById('chat-box-msg-display').append(messageDiv);
 }
 
 function toggleChat() {
     document.getElementById('chat-box').classList.toggle('hidden');
-
 }
 
 //Event Listeners
-
 document.getElementById('msg-bubble').addEventListener('click', toggleChat);
-
-
 
 document.getElementById('chat-send-btn').addEventListener('click', (event) => {
     let data = {
-        sender: window.taskApp.username,
+        sender: username,
         receipient: document.getElementById('chat-box-header').innerHTML,
         message: document.getElementById('message-box').value
     }
