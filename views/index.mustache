@@ -8,6 +8,11 @@
 </head>
 <body>
     <div class="calendar">
+      {{#driver}}
+      <h5>{{name}}</h5>
+      {{/driver}}
+
+      {{^driver}}
       <div class="driver-selection">
         <label for="drivers">Driver:</label>
         <select name="drivers" id="drivers">
@@ -16,6 +21,7 @@
             {{/drivers}}
         </select>
       </div>
+      {{/driver}}
       <header>
         <div class="month-picker">
           <button id="today-btn">Today</button>
@@ -28,9 +34,12 @@
       </header>
       <div id="day-grid" class="day-grid"></div>
     </div>
+    <div class="open-chat-button"><img id="msg-bubble" src="/msgbbl.svg" alt="message bubble"></div>
+    {{>chatbox}}
     {{>downloadForm}}
     {{>popupForm}}
     {{>conflictPopup}}
+    <script src="/js/chat.js"></script>
     <script src="/js/index.js"></script>
 </body>
 </html>

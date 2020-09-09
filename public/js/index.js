@@ -2,9 +2,25 @@ let firstDayOfWeek;
 let selectedTask;
 let currentDriver;
 let reportCsvString;
+window.taskApp = {};
 
+if (window.location.href.search(/drivers\/\d+/) != -1) {
+    let lastSlashIndex = window.location.href.lastIndexOf("/");
+    let driverId = parseInt(window.location.href.substring(lastSlashIndex+1));
+    loadDriverFromApi(driverId, (driver) => {
+        window.taskApp.username = driver.name;
+        console.log('username', window.taskApp.username);
+        setupChat(window.taskApp.username);
+        loadDriver(driver);
+    });
+} else {
+    window.taskApp.username = 'Dispatcher';
+    setupChat(window.taskApp.username);
+    loadDriverFromApi(document.getElementById('drivers').value, (driver) => {
+        loadDriver(driver);
+    });
+}
 setEventListeners();
-loadDriver(document.getElementById('drivers').value);
 
 //Functions
 
@@ -240,7 +256,7 @@ function displayCurrentDate() {
 
 function handleDriverChange(e) {
     currentDriverId =  parseInt(e.target.value);
-    loadDriver(currentDriverId);
+    loadDriverFromApi(currentDriverId, (driver) => loadDriver(driver));
 }
 
 function handleTask(task) {
@@ -419,16 +435,18 @@ function createCsvString() {
 
 // Functions
 
-function loadDriver(id) {
+function loadDriverFromApi(id, callback) {
     fetch(`/api/drivers/${id}`)
-        .then(response => response.json())
-        .then(data => {
-            data.tasks.forEach(task => {
-                task.startDateTime = new Date(task.startDateTime);
-            });
-            currentDriver = data;
-            displayCurrentDate();
-        });
+    .then(response => response.json())
+    .then(data => callback(data))
+}
+
+function loadDriver(driver) {
+    driver.tasks.forEach(task => {
+        task.startDateTime = new Date(task.startDateTime);
+    });
+    currentDriver = driver;
+    displayCurrentDate();
 }
 
 // Event Handler Functions
@@ -437,7 +455,9 @@ function setEventListeners() {
     document.getElementById('prev-week').addEventListener('click', changeWeek);
     document.getElementById('download-btn').addEventListener('click', openDownloadForm);
     document.getElementById('today-btn').addEventListener('click', displayCurrentDate);
-    document.getElementById('drivers').addEventListener('change', handleDriverChange);
+    if (document.getElementById('drivers')) {
+        document.getElementById('drivers').addEventListener('change', handleDriverChange);
+    }
     document.getElementById('task-container').addEventListener('submit', handleTaskSubmit);
     document.getElementById('cancel-btn').addEventListener('click', closeTaskForm);
     document.getElementById('download-close-btn').addEventListener('click', closeDownloadForm)
@@ -476,6 +496,7 @@ function download(filename, text) {
     element.click();
     document.body.removeChild(element);
 }
+
 
 
 

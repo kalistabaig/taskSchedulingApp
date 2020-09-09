@@ -96,6 +96,14 @@
         "location": "toronto",
         "type": "Dropoff",
         "description": "airmiles reward miles"
+      },
+      {
+        "id": 3,
+        "startDateTime": "2020-08-23T04:00:00.000Z",
+        "duration": 1,
+        "location": "toronto",
+        "type": "Pickup",
+        "description": "airmiles reward miles"
       }
     ]
   },

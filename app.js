@@ -1,6 +1,7 @@
 const express = require('express')
 const mustacheExpress = require('mustache-express')
 const database = require('./database');
+require('./serverChat');
 const app = express()
 const port = 3500
 
@@ -14,6 +15,12 @@ app.set('views', __dirname + '/views')
 app.get('/', (req, res) => {
     res.render('index.mustache', {drivers: database.getDrivers()});
 })
+
+app.get('/drivers/:id', (req, res) => {
+    const driver = database.getDriver(parseInt(req.params.id))
+    res.render('index.mustache', {driver})
+}) 
+
 //restful api
 app.get('/api/drivers/:id', (req, res) => {
     const driver = database.getDriver(parseInt(req.params.id));
@@ -29,6 +36,11 @@ app.post('/api/drivers/:currentDriverId/tasks', (req, res) => {
 app.delete('/api/drivers/:currentDriverId/tasks/:taskId', (req, res) => {
     database.deleteTask(parseInt(req.params.currentDriverId), parseInt(req.params.taskId));
     res.sendStatus(200);
+})
+
+app.get('/api/drivers', (req, res) => {
+    const drivers = database.getDrivers();
+    res.json(drivers);
 })
 
 app.listen(port, () => console.log(`Example app listening at port ${port}`))
