@@ -6,7 +6,8 @@ let messagesDictionary = {};
 //functions
 
 function openChatConnection() {
-    connection = new WebSocket(`ws://localhost:8080/`);
+    console.log(window.location);
+    connection = new WebSocket(`ws://${window.location.hostname}:8080/`);
     connection.onopen = () => {
         console.log('connected');
     };
