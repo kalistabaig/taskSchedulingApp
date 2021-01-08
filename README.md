@@ -1,6 +1,6 @@
 # Rose Rocket Coding Challenge: Dispatcher Task Management App
 
-You can see this programming running at [http://taskapp.kalistabaig.me](http://taskapp.kalistabaig.me)
+You can see this programming running at [http://taskapp.kalistabaig.com](http://taskapp.kalistabaig.me)
 
 # Install
 The backend of the app runs using Node, Express, and Mustache Express View Engine. These need to be installed prior to running the program.
